@@ -57,7 +57,7 @@ builder.Services
                 channel.QueueBind(
                     "gp.gamerecord.joker",
                     "amq.direct",
-                    "gp.gamerecord.joker",
+                    "tgs.gp.gamerecord.joker",
                     new Dictionary<string, object>());
             };
         }).AddHandler<JokerReceiveHandler>("gp.gamerecord.joker");
