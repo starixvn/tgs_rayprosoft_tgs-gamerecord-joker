@@ -9,16 +9,22 @@ namespace Tgs.GameProviders.GameRecord.JokerService.Core.ApplicationServices;
 internal class JokerWorkerCommandService : ICommandService<JokerWorkerCommand>
 {
     private readonly IGameProvidersQueryServerClient _client;
+    private readonly IGameProviderService _gameProviderService;
     private readonly IGetService<JokerGameRecordQuery, JokerGameRecordResult> _getService;
     private readonly ILogger<JokerWorkerCommandService> _logger;
+    private readonly IJokerGameProviderScheduleService _scheduleService;
 
     public JokerWorkerCommandService(
         IGameProvidersQueryServerClient client,
+        IJokerGameProviderScheduleService scheduleService,
+        IGameProviderService gameProviderService,
         IGetService<JokerGameRecordQuery, JokerGameRecordResult> getService,
         ILogger<JokerWorkerCommandService> logger)
 
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
+        _scheduleService = scheduleService ?? throw new ArgumentNullException(nameof(scheduleService));
+        _gameProviderService = gameProviderService ?? throw new ArgumentNullException(nameof(gameProviderService));
         _getService = getService ?? throw new ArgumentNullException(nameof(getService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
@@ -35,9 +41,8 @@ internal class JokerWorkerCommandService : ICommandService<JokerWorkerCommand>
             return;
         }
 
-        var timespan = TimeSpan.FromHours(8);
-        var startTime = DateTimeOffset.UtcNow.AddMinutes(-20).ToOffset(timespan);
-        var endTime = DateTimeOffset.UtcNow.ToOffset(timespan);
+        var gameProviderId =
+            await _gameProviderService.GetGameProviderIdAsync(GameProviderType.Joker).ConfigureAwait(false);
 
         foreach (var brandMerchant in configuration.BrandMerchants)
         {
@@ -45,13 +50,41 @@ internal class JokerWorkerCommandService : ICommandService<JokerWorkerCommand>
             {
                 try
                 {
-                    var query = new JokerGameRecordQuery(
-                        brandMerchant.BrandCode,
-                        agent.CurrencyCode,
-                        startTime,
-                        endTime);
+                    var schedule = await _scheduleService
+                                       .GetAsync(gameProviderId, brandMerchant.BrandCode,
+                                           agent.AgentId, agent.CurrencyCode)
+                                       .ConfigureAwait(false) ??
+                                   await _scheduleService
+                                       .InitAsync(gameProviderId, brandMerchant.BrandCode,
+                                           agent.AgentId, agent.CurrencyCode)
+                                       .ConfigureAwait(false);
 
-                    _ = await _getService.GetAsync(query, cancellationToken).ConfigureAwait(false);
+                    var sysTime = DateTimeOffset.UtcNow;
+
+                    while (schedule != null)
+                    {
+                        var config = _scheduleService.GetConfig(schedule);
+
+                        if (config.EndTime >= sysTime)
+                            break;
+
+                        var query = new JokerGameRecordQuery(
+                            brandMerchant.BrandCode,
+                            agent.CurrencyCode,
+                            config.StartTime,
+                            config.EndTime);
+
+                        var result = await _getService.GetAsync(query, cancellationToken).ConfigureAwait(false);
+
+                        if (!result.Success)
+                        {
+                            break;
+                        }
+
+                        schedule = await _scheduleService
+                            .UpdateAsync(schedule, result.LastGameRecordTime, sysTime)
+                            .ConfigureAwait(false);
+                    }
                 }
                 catch (Exception ex)
                 {

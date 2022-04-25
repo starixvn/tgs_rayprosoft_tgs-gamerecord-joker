@@ -20,5 +20,6 @@ public static class ServiceCollectionExtensions
             .AddTransient<IPlayerService, PlayerService>()
             .AddTransient<IGameProviderService, GameProviderService>()
             .AddTransient<IGameService, GameService>()
+            .AddTransient<IJokerGameProviderScheduleService, JokerGameProviderScheduleService>()
             .AddTransient<IGameRecordMessageSender, GameRecordMessageSender>();
 }

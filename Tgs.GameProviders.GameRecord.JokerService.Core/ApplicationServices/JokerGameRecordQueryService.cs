@@ -20,6 +20,7 @@ internal class JokerGameRecordQueryService : IGetService<JokerGameRecordQuery, J
         JokerGameRecordQuery query,
         CancellationToken cancellationToken = default)
     {
+        var count = 0;
         var successCount = 0;
         var failureCount = 0;
         var lastRecordTime = default(DateTimeOffset?);
@@ -46,6 +47,8 @@ internal class JokerGameRecordQueryService : IGetService<JokerGameRecordQuery, J
 
             foreach (var data in records)
             {
+                count++;
+
                 var isSuccess = await _getService.GetAsync(
                         new JokerGameRoundQuery(
                             new GameRecordInfo(
@@ -83,6 +86,8 @@ internal class JokerGameRecordQueryService : IGetService<JokerGameRecordQuery, J
         } while (!string.IsNullOrEmpty(nextId));
 
         return new JokerGameRecordResult(
+            true,
+            count,
             successCount,
             failureCount,
             lastRecordTime);

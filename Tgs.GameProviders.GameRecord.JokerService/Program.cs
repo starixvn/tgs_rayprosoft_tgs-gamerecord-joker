@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using MongoDB.Messaging;
 using Tgs.GameProviders.GameRecord.JokerService.Core.DependencyInjection;
@@ -33,7 +34,12 @@ builder.Services
         {
             var configuration = sp.GetRequiredService<IConfiguration>();
             options.BaseUrl = configuration.GetValue<Uri>("GameRecord:GameProvidersQueryServerBaseUrl");
-        });
+        })
+    .AddGameRecordMongoRepositories((options, sp) =>
+    {
+        var configuration = sp.GetRequiredService<IConfiguration>();
+        options.ConnectionString = configuration.GetConnectionString("MongoDBConnectionString");
+    });
 
 builder.Services
     .AddMessageQueue()

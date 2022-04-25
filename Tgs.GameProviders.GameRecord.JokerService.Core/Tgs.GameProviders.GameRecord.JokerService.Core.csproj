@@ -10,6 +10,7 @@
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
     <PackageReference Include="MongoDB.Bson" Version="2.15.0" />
+    <PackageReference Include="MongoDB.Driver" Version="2.15.0" />
     <PackageReference Include="Tgs.GameProviders.Client" Version="0.0.34" />
     <PackageReference Include="Tgs.GameProviders.QueryServer.Client" Version="0.0.10" />
     <PackageReference Include="Tgs.MessageQueue" Version="2.1.0" />
