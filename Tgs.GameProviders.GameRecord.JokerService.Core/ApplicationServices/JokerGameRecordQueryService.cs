@@ -6,11 +6,11 @@ namespace Tgs.GameProviders.GameRecord.JokerService.Core.ApplicationServices;
 internal class JokerGameRecordQueryService : IGetService<JokerGameRecordQuery, JokerGameRecordResult>
 {
     private readonly IGameRecordListClient _gameRecordListClient;
-    private readonly IGetService<JokerGameRoundQuery, bool> _getService;
+    private readonly IGetService<JokerGameRoundHandleQuery, bool> _getService;
 
     public JokerGameRecordQueryService(
         IGameRecordListClient gameRecordListClient,
-        IGetService<JokerGameRoundQuery, bool> getService)
+        IGetService<JokerGameRoundHandleQuery, bool> getService)
     {
         _gameRecordListClient = gameRecordListClient ?? throw new ArgumentNullException(nameof(gameRecordListClient));
         _getService = getService ?? throw new ArgumentNullException(nameof(getService));
@@ -50,7 +50,7 @@ internal class JokerGameRecordQueryService : IGetService<JokerGameRecordQuery, J
                 count++;
 
                 var isSuccess = await _getService.GetAsync(
-                        new JokerGameRoundQuery(
+                        new JokerGameRoundHandleQuery(
                             new GameRecordInfo(
                                 data.GameProviderCode,
                                 data.GameProviderId,

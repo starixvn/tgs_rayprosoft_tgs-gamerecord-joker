@@ -4,14 +4,14 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.GameProviders.GameRecord.JokerService.Core.ApplicationServices;
 
-internal class JokerGameRoundQueryService : IGetService<JokerGameRoundQuery, bool>
+internal class JokerGameRoundHandleService : IGetService<JokerGameRoundHandleQuery, bool>
 {
     private readonly IGameProviderService _gameProviderService;
     private readonly IGameRecordMessageSender _gameRecordMessageSender;
     private readonly IGameService _gameService;
     private readonly IPlayerService _playerService;
 
-    public JokerGameRoundQueryService(
+    public JokerGameRoundHandleService(
         IGameProviderService gameProviderService,
         IGameRecordMessageSender gameRecordMessageSender,
         IGameService gameService,
@@ -24,7 +24,7 @@ internal class JokerGameRoundQueryService : IGetService<JokerGameRoundQuery, boo
     }
 
     public async ValueTask<bool> GetAsync(
-        JokerGameRoundQuery query,
+        JokerGameRoundHandleQuery query,
         CancellationToken cancellationToken = default)
     {
         const string gameProviderCode = GameProviderType.Joker;
