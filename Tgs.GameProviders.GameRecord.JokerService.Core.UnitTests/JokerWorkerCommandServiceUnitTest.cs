@@ -74,21 +74,29 @@ internal class JokerWorkerCommandServiceUnitTest
         var gameRecordResult = new JokerGameRecordResult(true, 10, 10, 0, DateTimeOffset.UtcNow);
 
         _ = fakeGameProvidersQueryServerClient
-            .SettingGetConfigurationAsync<JokerConfiguration>(GameProviderConfigurations.Joker)
+            .SettingGetConfigurationAsync<JokerConfiguration>(Arg.Is(GameProviderConfigurations.Joker))
             .Returns(configuration);
 
-        _ = fakeGameProviderService.GetGameProviderIdAsync(GameProviderType.Joker)
+        _ = fakeGameProviderService.GetGameProviderIdAsync(Arg.Is(GameProviderType.Joker))
          .Returns(gameProviderId);
 
         _ = fakeGameProviderScheduleService
-            .GetAsync(gameProviderId, brandMerchant.BrandCode, agent.AgentId, agent.CurrencyCode)
+            .GetAsync(
+                Arg.Is(gameProviderId),
+                Arg.Is(brandMerchant.BrandCode),
+                Arg.Is(agent.AgentId),
+                Arg.Is(agent.CurrencyCode))
             .Returns(schedule);
 
-        _ = fakeGameProviderScheduleService.GetConfig(schedule)
+        _ = fakeGameProviderScheduleService.GetConfig(Arg.Is(schedule))
             .Returns(scheduleConfig);
 
-        _ = fakeGameRecordQueryService.GetAsync(new JokerGameRecordQuery(brandMerchant.BrandCode, agent.CurrencyCode,
-                scheduleConfig.StartTime, scheduleConfig.EndTime))
+        _ = fakeGameRecordQueryService.GetAsync(
+            Arg.Is(new JokerGameRecordQuery(
+                    brandMerchant.BrandCode,
+                    agent.CurrencyCode,
+                    scheduleConfig.StartTime,
+                    scheduleConfig.EndTime)))
             .Returns(gameRecordResult);
 
         var sut = new JokerWorkerCommandService(
@@ -109,7 +117,12 @@ internal class JokerWorkerCommandServiceUnitTest
 
         _ = fakeGameRecordQueryService
             .Received(Quantity.AtLeastOne())
-            .GetAsync(new JokerGameRecordQuery(brandMerchant.BrandCode, agent.CurrencyCode,
-                scheduleConfig.StartTime, scheduleConfig.EndTime));
+            .GetAsync(
+                Arg.Is(
+                    new JokerGameRecordQuery(
+                        brandMerchant.BrandCode,
+                        agent.CurrencyCode,
+                        scheduleConfig.StartTime,
+                        scheduleConfig.EndTime)));
     }
 }

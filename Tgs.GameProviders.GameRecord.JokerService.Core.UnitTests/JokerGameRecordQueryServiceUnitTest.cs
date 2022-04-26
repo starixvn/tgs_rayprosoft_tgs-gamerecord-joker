@@ -64,11 +64,11 @@ internal class JokerGameRecordQueryServiceUnitTest
             DateTimeOffset.UtcNow);
 
         _ = fakeGameRecordClient.JokerGameRecordListAsync(
-               query.BrandCode,
-               query.CurrencyCode,
-               query.StartTime,
-               query.EndTime,
-               null)
+               Arg.Is(query.BrandCode),
+               Arg.Is(query.CurrencyCode),
+               Arg.Is(query.StartTime),
+               Arg.Is(query.EndTime),
+               Arg.Is((string?)null))
                .Returns(gameRecordResponse);
 
         _ = fakeGameRoundQueryService
@@ -84,10 +84,10 @@ internal class JokerGameRecordQueryServiceUnitTest
         _ = fakeGameRecordClient
             .Received(1)
             .JokerGameRecordListAsync(
-                query.BrandCode,
-                query.CurrencyCode,
-                query.StartTime,
-                query.EndTime,
+                Arg.Is(query.BrandCode),
+                Arg.Is(query.CurrencyCode),
+                Arg.Is(query.StartTime),
+                Arg.Is(query.EndTime),
                 Arg.Any<string>());
     }
 
@@ -169,19 +169,19 @@ internal class JokerGameRecordQueryServiceUnitTest
             DateTimeOffset.UtcNow);
 
         _ = fakeGameRecordClient.JokerGameRecordListAsync(
-               query.BrandCode,
-               query.CurrencyCode,
-               query.StartTime,
-               query.EndTime,
-               null)
+            Arg.Is(query.BrandCode),
+            Arg.Is(query.CurrencyCode),
+            Arg.Is(query.StartTime),
+            Arg.Is(query.EndTime),
+            Arg.Is((string?)null))
                .Returns(gameRecordResponseWithNextId);
 
         _ = fakeGameRecordClient.JokerGameRecordListAsync(
-                query.BrandCode,
-                query.CurrencyCode,
-                query.StartTime,
-                query.EndTime,
-                gameRecordResponseWithNextId.NextId)
+            Arg.Is(query.BrandCode),
+            Arg.Is(query.CurrencyCode),
+            Arg.Is(query.StartTime),
+            Arg.Is(query.EndTime),
+            Arg.Is(gameRecordResponseWithNextId.NextId))
             .Returns(gameRecordResponseWithoutNextId);
 
         _ = fakeGameRoundQueryService
@@ -197,10 +197,10 @@ internal class JokerGameRecordQueryServiceUnitTest
         _ = fakeGameRecordClient
             .Received(2)
             .JokerGameRecordListAsync(
-                query.BrandCode,
-                query.CurrencyCode,
-                query.StartTime,
-                query.EndTime,
+                Arg.Is(query.BrandCode),
+                Arg.Is(query.CurrencyCode),
+                Arg.Is(query.StartTime),
+                Arg.Is(query.EndTime),
                 Arg.Any<string>());
     }
 }
