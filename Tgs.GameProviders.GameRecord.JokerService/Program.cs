@@ -1,7 +1,11 @@
 using System.Text.Json.Serialization;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using MongoDB.Messaging;
+using OpenTelemetry.Exporter;
+using OpenTelemetry.Instrumentation.AspNetCore;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using Tgs.GameProviders.GameRecord.JokerService.Core.DependencyInjection;
 using Tgs.GameProviders.GameRecord.JokerService.ReceiveHandler;
 using Tgs.MessageQueue.MongoDB.Configuration;
@@ -85,7 +89,42 @@ builder.Services
         "gp.gamerecord.database",
         "tgs.gp.gamerecord.database.round.joker");
 
-//builder.Services.AddEndpointsApiExplorer();
+builder.Services
+    .AddSingleton<IConfigureOptions<OtlpExporterOptions>>(
+        sp => new ConfigureNamedOptions<OtlpExporterOptions>(
+            Options.DefaultName,
+            exporterOptions =>
+            {
+                var config = sp.GetRequiredService<IConfiguration>();
+                var nodeIp = config.GetValue<string>("NODE_IP");
+
+                if (!string.IsNullOrWhiteSpace(nodeIp))
+                    exporterOptions.Endpoint = new Uri($"http://{nodeIp}:4317");
+
+                config.GetSection("Opentelemetry:Tracing").Bind(exporterOptions);
+            }))
+    .AddOpenTelemetryTracing(traceBuilder => traceBuilder
+        .SetResourceBuilder(ResourceBuilder.CreateDefault().AddEnvironmentVariableDetector())
+        .AddSource("Tgs.*")
+        .AddSource("TGS.*")
+        .AddAspNetCoreInstrumentation()
+        .AddHttpClientInstrumentation()
+        .AddProfileViewExporter()
+        .AddOtlpExporter())
+    .AddProfileViewer()
+    .Configure<AspNetCoreInstrumentationOptions>(options =>
+    {
+        options.Filter = httpContext =>
+        {
+            return !httpContext.Request.Path.HasValue
+                   || !httpContext.Request.Path.StartsWithSegments("/swagger")
+                   && !httpContext.Request.Path.StartsWithSegments("/healthz")
+                   && !httpContext.Request.Path.StartsWithSegments("/profiler/")
+                   && !new[] { "html", "ico", "png", "jpg" }.Any(
+                       ext => httpContext.Request.Path.Value.EndsWith($".{ext}"));
+        };
+    });
+
 builder.Services.AddSwaggerGen(options =>
 {
     var xmlFileNames = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.xml");
@@ -106,7 +145,8 @@ builder.Services.AddHealthChecks();
 var app = builder.Build();
 
 app.MapControllers();
-app.UseSwagger();
+app.MapProfileViewer();
+app.MapSwagger();
 app.UseSwaggerUI();
 
 app.MapHealthChecks("/healthz");
