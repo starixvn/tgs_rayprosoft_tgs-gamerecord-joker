@@ -5,15 +5,21 @@ WORKDIR /app
 EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+ARG BuildConfiguration=Release
+RUN --mount=type=secret,id=nuget,dst=/pat cp /pat ~/.nuget/NuGet/NuGet.Config
 WORKDIR /src
+COPY ["nuget.config", "."]
 COPY ["Tgs.GameProviders.GameRecord.JokerService/Tgs.GameProviders.GameRecord.JokerService.csproj", "Tgs.GameProviders.GameRecord.JokerService/"]
+COPY ["Tgs.GameProviders.GameRecord.Repositories/Tgs.GameProviders.GameRecord.Repositories.csproj", "Tgs.GameProviders.GameRecord.Repositories/"]
+COPY ["Tgs.GameProviders.GameRecord.JokerService.Core/Tgs.GameProviders.GameRecord.JokerService.Core.csproj", "Tgs.GameProviders.GameRecord.JokerService.Core/"]
 RUN dotnet restore "Tgs.GameProviders.GameRecord.JokerService/Tgs.GameProviders.GameRecord.JokerService.csproj"
 COPY . .
 WORKDIR "/src/Tgs.GameProviders.GameRecord.JokerService"
-RUN dotnet build "Tgs.GameProviders.GameRecord.JokerService.csproj" -c Release -o /app/build
+RUN dotnet build "Tgs.GameProviders.GameRecord.JokerService.csproj" -c $BuildConfiguration -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Tgs.GameProviders.GameRecord.JokerService.csproj" -c Release -o /app/publish
+ARG BuildConfiguration
+RUN dotnet publish "Tgs.GameProviders.GameRecord.JokerService.csproj" -c $BuildConfiguration -o /app/publish
 
 FROM base AS final
 WORKDIR /app
