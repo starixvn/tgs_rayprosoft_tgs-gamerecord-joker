@@ -28,7 +28,7 @@ internal class JokerGameProviderScheduleService : IJokerGameProviderScheduleServ
         {
             IntervalMinuteMax = intervalMinuteMax,
             IntervalMinute = intervalMinute,
-            LastGameRecordTime = new DateTimeOffset(Convert.ToDateTime("1970-01-01"), TimeSpan.FromHours(+8)),
+            LastGameRecordTime = new DateTimeOffset(Convert.ToDateTime("1970-01-01"), TimeSpan.Zero),
             StartTime = sysTime.AddSeconds((double)intervalMinute * 60 * -1),
             EndTime = sysTime
         };

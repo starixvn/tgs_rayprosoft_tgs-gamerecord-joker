@@ -59,13 +59,13 @@ internal class JokerGameRecordQueryServiceUnitTest
 
         var query = new JokerGameRecordQuery(
             "Default",
-            "HKD",
+            "TGVY",
             DateTimeOffset.UtcNow.AddMinutes(-20),
             DateTimeOffset.UtcNow);
 
         _ = fakeGameRecordClient.JokerGameRecordListAsync(
                Arg.Is(query.BrandCode),
-               Arg.Is(query.CurrencyCode),
+               Arg.Is(query.AgentId),
                Arg.Is(query.StartTime),
                Arg.Is(query.EndTime),
                Arg.Is((string?)null))
@@ -85,7 +85,7 @@ internal class JokerGameRecordQueryServiceUnitTest
             .Received(1)
             .JokerGameRecordListAsync(
                 Arg.Is(query.BrandCode),
-                Arg.Is(query.CurrencyCode),
+                Arg.Is(query.AgentId),
                 Arg.Is(query.StartTime),
                 Arg.Is(query.EndTime),
                 Arg.Any<string>());
@@ -164,13 +164,13 @@ internal class JokerGameRecordQueryServiceUnitTest
 
         var query = new JokerGameRecordQuery(
             "Default",
-            "HKD",
+            "TGVY",
             DateTimeOffset.UtcNow.AddMinutes(-20),
             DateTimeOffset.UtcNow);
 
         _ = fakeGameRecordClient.JokerGameRecordListAsync(
             Arg.Is(query.BrandCode),
-            Arg.Is(query.CurrencyCode),
+            Arg.Is(query.AgentId),
             Arg.Is(query.StartTime),
             Arg.Is(query.EndTime),
             Arg.Is((string?)null))
@@ -178,7 +178,7 @@ internal class JokerGameRecordQueryServiceUnitTest
 
         _ = fakeGameRecordClient.JokerGameRecordListAsync(
             Arg.Is(query.BrandCode),
-            Arg.Is(query.CurrencyCode),
+            Arg.Is(query.AgentId),
             Arg.Is(query.StartTime),
             Arg.Is(query.EndTime),
             Arg.Is(gameRecordResponseWithNextId.NextId))
@@ -198,7 +198,7 @@ internal class JokerGameRecordQueryServiceUnitTest
             .Received(2)
             .JokerGameRecordListAsync(
                 Arg.Is(query.BrandCode),
-                Arg.Is(query.CurrencyCode),
+                Arg.Is(query.AgentId),
                 Arg.Is(query.StartTime),
                 Arg.Is(query.EndTime),
                 Arg.Any<string>());

@@ -70,20 +70,18 @@ internal class JokerWorkerCommandService : ICommandService<JokerWorkerCommand>
 
                         var query = new JokerGameRecordQuery(
                             brandMerchant.BrandCode,
-                            agent.CurrencyCode,
+                            agent.AgentId,
                             config.StartTime,
                             config.EndTime);
 
                         var result = await _getService.GetAsync(query, cancellationToken).ConfigureAwait(false);
 
-                        if (!result.Success)
-                        {
+                        if (result.Success)
+                            schedule = await _scheduleService
+                                .UpdateAsync(schedule, result.LastGameRecordTime, sysTime)
+                                .ConfigureAwait(false);
+                        else
                             break;
-                        }
-
-                        schedule = await _scheduleService
-                            .UpdateAsync(schedule, result.LastGameRecordTime, sysTime)
-                            .ConfigureAwait(false);
                     }
                 }
                 catch (Exception ex)
