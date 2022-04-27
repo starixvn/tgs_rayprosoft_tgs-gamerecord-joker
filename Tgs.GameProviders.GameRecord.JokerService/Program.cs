@@ -56,7 +56,7 @@ builder.Services
     .AddGameRecordMongoRepositories((options, sp) =>
     {
         var configuration = sp.GetRequiredService<IConfiguration>();
-        options.ConnectionString = configuration.GetConnectionString("MongoDBConnectionString");
+        options.ConnectionString = configuration.GetConnectionString("Mongo");
     });
 
 builder.Services
@@ -93,7 +93,7 @@ builder.Services
                 "gp.gamerecord.database",
                 sp => new MongoMessageQueueBuilderOptions
                 {
-                    ConnectionString = sp.GetRequiredService<IConfiguration>().GetConnectionString("MongoDBMessagingConnectionString"),
+                    ConnectionString = sp.GetRequiredService<IConfiguration>().GetConnectionString("MongoMessaging"),
                     MessageQueue = MessageQueue.Default
                 });
     })

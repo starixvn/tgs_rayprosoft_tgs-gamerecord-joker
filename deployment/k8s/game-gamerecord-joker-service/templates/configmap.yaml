@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: configmap-{{ include "game-gamerecord-joker-service.fullname" . }}
+  labels:
+    {{- include "game-gamerecord-joker-service.labels" . | nindent 4 }}
+data:
+  appsettings.json: |
+    {
+      "GameRecord": {
+        "GameProvidersBaseUrl": "http://game-gameproviders",
+        "GameProvidersQueryServerBaseUrl": "http://game-gameprovider-queryserver"
+      }
+    }
