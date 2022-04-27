@@ -45,13 +45,17 @@ internal class JokerGameRoundHandleServiceUnitTest
             Guid.Parse("cf99c783-acdf-48cc-b1cc-08d99a806de9"),
             Guid.NewGuid());
 
-        _ = fakeGameProviderService.GetGameProviderIdAsync(gameRecord.GameProviderCode)
+        _ = fakeGameProviderService.GetGameProviderIdAsync(Arg.Is(gameRecord.GameProviderCode))
             .Returns(gameRecord.GameProviderId);
 
-        _ = fakePlayerService.GetAsync(gameRecord.GameProviderId, gameRecord.PlayerCode)
+        _ = fakePlayerService.GetAsync(
+                Arg.Is(gameRecord.GameProviderId),
+                Arg.Is(gameRecord.PlayerCode))
             .Returns(playerInfo);
 
-        _ = fakeGameService.GetGameIdAsync(gameRecord.GameProviderId, gameRecord.ExternalGameId)
+        _ = fakeGameService.GetGameIdAsync(
+                Arg.Is(gameRecord.GameProviderId),
+                Arg.Is(gameRecord.ExternalGameId))
             .Returns(2600025);
 
         var query = new JokerGameRoundHandleQuery(gameRecord);

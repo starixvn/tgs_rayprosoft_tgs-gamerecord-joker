@@ -2,6 +2,6 @@
 
 public record JokerGameRecordQuery(
     string BrandCode,
-    string CurrencyCode,
+    string AgentId,
     DateTimeOffset StartTime,
     DateTimeOffset EndTime);

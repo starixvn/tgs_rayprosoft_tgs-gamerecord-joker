@@ -28,7 +28,7 @@ internal class JokerGameProviderScheduleService : IJokerGameProviderScheduleServ
         {
             IntervalMinuteMax = intervalMinuteMax,
             IntervalMinute = intervalMinute,
-            LastGameRecordTime = new DateTimeOffset(Convert.ToDateTime("1970-01-01"), TimeSpan.FromHours(+8)),
+            LastGameRecordTime = new DateTimeOffset(Convert.ToDateTime("1970-01-01"), TimeSpan.Zero),
             StartTime = sysTime.AddSeconds((double)intervalMinute * 60 * -1),
             EndTime = sysTime
         };
@@ -38,9 +38,9 @@ internal class JokerGameProviderScheduleService : IJokerGameProviderScheduleServ
             Id = Guid.NewGuid(),
             GameProviderId = gameProviderId,
             GameProviderCode = GameProviderType.Joker,
-            BrandCode = string.Empty,
-            AgentId = string.Empty,
-            CurrencyCode = string.Empty,
+            BrandCode = brandCode,
+            AgentId = agentId,
+            CurrencyCode = currencyCode,
             Config = JsonSerializer.Serialize(config),
             CreatedOn = sysTime,
             UpdatedOn = sysTime
@@ -67,7 +67,7 @@ internal class JokerGameProviderScheduleService : IJokerGameProviderScheduleServ
         {
             var endTime = config.EndTime.AddSeconds((double)config.IntervalMinute * 60);
             config.StartTime = config.EndTime;
-            config.EndTime = (endTime > sysTime) ? sysTime : endTime;
+            config.EndTime = endTime > sysTime ? sysTime : endTime;
         }
 
         config.LastGameRecordTime = lastGameRecordTime ?? config.LastGameRecordTime;

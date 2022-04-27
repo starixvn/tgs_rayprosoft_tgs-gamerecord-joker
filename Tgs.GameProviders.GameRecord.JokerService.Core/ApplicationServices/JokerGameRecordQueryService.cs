@@ -31,7 +31,7 @@ internal class JokerGameRecordQueryService : IGetService<JokerGameRecordQuery, J
         {
             var response = await _gameRecordListClient.JokerGameRecordListAsync(
                 query.BrandCode,
-                query.CurrencyCode,
+                query.AgentId,
                 query.StartTime,
                 query.EndTime,
                 nextId).ConfigureAwait(false);
@@ -73,13 +73,9 @@ internal class JokerGameRecordQueryService : IGetService<JokerGameRecordQuery, J
                     .ConfigureAwait(false);
 
                 if (isSuccess)
-                {
                     successCount++;
-                }
                 else
-                {
                     failureCount++;
-                }
 
                 lastRecordTime = data.ExternalClosedOn ?? data.ExternalCreatedOn;
             }

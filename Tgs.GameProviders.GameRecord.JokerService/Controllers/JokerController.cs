@@ -22,7 +22,7 @@ namespace Tgs.GameProviders.GameRecord.JokerService.Controllers
         ///     Post
         ///         {
         ///             "brandCode": "Default",
-        ///             "currencyCode": "HKD",
+        ///             "agentId": "TGVY",
         ///             "startTime": "2021-11-30T16:00:00+00:00",
         ///             "endTime": "2021-12-31T16:00:00+00:00"
         ///         }
@@ -36,7 +36,7 @@ namespace Tgs.GameProviders.GameRecord.JokerService.Controllers
                 .GetAsync(
                     new JokerGameRecordQuery(
                         viewModel.BrandCode,
-                        viewModel.CurrencyCode,
+                        viewModel.AgentId,
                         viewModel.StartTime,
                         viewModel.EndTime))
                 .ConfigureAwait(false);
