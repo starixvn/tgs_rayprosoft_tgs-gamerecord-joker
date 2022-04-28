@@ -48,7 +48,9 @@ Selector labels
 */}}
 {{- define "game-gamerecord-joker-service.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "game-gamerecord-joker-service.name" . }}
+app: {{ include "game-gamerecord-joker-service.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+tgs.kind: game
 {{- end }}
 
 {{/*

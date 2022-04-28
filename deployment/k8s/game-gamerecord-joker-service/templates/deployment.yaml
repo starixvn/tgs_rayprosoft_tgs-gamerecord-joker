@@ -19,7 +19,6 @@ spec:
       {{- end }}
       labels:
         {{- include "game-gamerecord-joker-service.selectorLabels" . | nindent 8 }}
-        tgs.kind: game
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
