@@ -99,7 +99,7 @@ spec:
             periodSeconds: 2
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-      volumns:
+      volumes:
         - name: appsettings
           configMap:
             - name: configmap-{{ include "game-gamerecord-joker-service.fullname" . }}
