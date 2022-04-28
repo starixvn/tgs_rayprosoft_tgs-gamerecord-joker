@@ -36,7 +36,6 @@ Common labels
 {{- define "game-gamerecord-joker-service.labels" -}}
 helm.sh/chart: {{ include "game-gamerecord-joker-service.chart" . }}
 {{ include "game-gamerecord-joker-service.selectorLabels" . }}
-tgs.kind: game
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
