@@ -102,7 +102,7 @@ spec:
       volumes:
         - name: appsettings
           configMap:
-            - name: configmap-{{ include "game-gamerecord-joker-service.fullname" . }}
+            name: configmap-{{ include "game-gamerecord-joker-service.fullname" . }}
         {{- if eq .Values.namespace "prod" }}
         - name: rds-combined-ca-bundle
           configMap:
