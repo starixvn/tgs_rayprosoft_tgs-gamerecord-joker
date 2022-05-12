@@ -75,12 +75,10 @@ spec:
               name: appsettings
               readOnly: true
               subPath: appsettings.json
-            {{- if eq .Values.namespace "prod" }}
             - mountPath: /etc/ssl/certs/rds-combined-ca-bundle.pem
               name: rds-combined-ca-bundle
               readOnly: true
               subPath: rds-combined-ca-bundle.pem
-            {{- end }}
           ports:
             - name: http
               containerPort: 80
@@ -103,11 +101,9 @@ spec:
         - name: appsettings
           configMap:
             name: configmap-{{ include "game-gamerecord-joker-service.fullname" . }}
-        {{- if eq .Values.namespace "prod" }}
         - name: rds-combined-ca-bundle
-          configMap:
-            name: configmap-mongodb-pem
-        {{- end }}
+          secret:
+            secretName: rds-combined-ca-bundle
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
