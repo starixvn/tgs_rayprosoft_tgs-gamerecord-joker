@@ -63,7 +63,7 @@ pipeline {
 
         stage('Build Docker Image') {
 			steps {
-				sh 'dotnet build "Tgs.GameProviders.GameRecord.JokerService/Tgs.GameProviders.GameRecord.JokerService.csproj" -c $BuildConfiguration -t:ContainerBuild -p:DockerfileTag="$ImageName:${TAG}" --no-restore '
+				sh 'dotnet build "Tgs.GameRecord.JokerService/Tgs.GameRecord.JokerService.csproj" -c $BuildConfiguration -t:ContainerBuild -p:DockerfileTag="$ImageName:${TAG}" --no-restore '
 			}
 		}
 
