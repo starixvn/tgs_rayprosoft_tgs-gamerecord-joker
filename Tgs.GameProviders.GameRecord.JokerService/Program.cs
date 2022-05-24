@@ -108,7 +108,7 @@ builder.Services
              var configuration = sp.GetRequiredService<IConfiguration>();
              options.Url = configuration.GetConnectionString("Nats");
          })
-         .AddProcessor<ManualMessageHandler>("gp.gamerecord.manual.jocker", "gp.gamerecord.manual");
+         .AddProcessor<ManualMessageHandler>("gp.gamerecord.manual.joker", "gp.gamerecord.manual");
      })
     .ClearAllExchanges()
     .AddMongoGlobPatternExchange(
