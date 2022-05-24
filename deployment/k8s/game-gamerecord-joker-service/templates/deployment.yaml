@@ -144,6 +144,10 @@ spec:
         - name: rds-combined-ca-bundle
           secret:
             secretName: rds-combined-ca-bundle
+        - name: diagvol
+          emptyDir: {}
+        - name: dumpsvol
+          emptyDir: {}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
