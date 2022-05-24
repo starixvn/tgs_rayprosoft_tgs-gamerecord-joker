@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using System.Text.Json;
 using Tgs.GameProviders.Domains;
-using Tgs.GameProviders.GameRecord.JokerService.Core.ApplicationServices;
+using Tgs.GameProviders.GameRecord.JokerService.Core.JobWorkerServices;
 using Tgs.MessageQueue;
 using Tgs.ServiceUtility;
 

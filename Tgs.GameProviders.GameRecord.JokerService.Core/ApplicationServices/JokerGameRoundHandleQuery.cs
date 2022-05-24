@@ -1,3 +1,5 @@
-﻿namespace Tgs.GameProviders.GameRecord.JokerService.Core.ApplicationServices;
+﻿using Tgs.GameProviders.Client;
 
-public record JokerGameRoundHandleQuery(GameRecordInfo GameRecord);
+namespace Tgs.GameProviders.GameRecord.JokerService.Core.ApplicationServices;
+
+public record JokerGameRoundHandleQuery(GameRecordModle GameRecord);

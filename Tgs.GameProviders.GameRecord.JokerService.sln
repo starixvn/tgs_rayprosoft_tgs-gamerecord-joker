@@ -12,9 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.GameProviders.GameRecord.JokerService.Core", "Tgs.GameProviders.GameRecord.JokerService.Core\Tgs.GameProviders.GameRecord.JokerService.Core.csproj", "{13398089-F698-4FBD-93A7-DF7DB48D8E9E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tgs.GameProviders.GameRecord.Repositories", "Tgs.GameProviders.GameRecord.Repositories\Tgs.GameProviders.GameRecord.Repositories.csproj", "{DC8AAF50-D99E-4220-9DA4-5F7574CAAB9E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tgs.GameProviders.GameRecord.JokerService.Core.UnitTests", "Tgs.GameProviders.GameRecord.JokerService.Core.UnitTests\Tgs.GameProviders.GameRecord.JokerService.Core.UnitTests.csproj", "{21C8F4E7-933A-4B50-ADF5-5CCE550C481B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.GameProviders.GameRecord.JokerService.Core.UnitTests", "Tgs.GameProviders.GameRecord.JokerService.Core.UnitTests\Tgs.GameProviders.GameRecord.JokerService.Core.UnitTests.csproj", "{21C8F4E7-933A-4B50-ADF5-5CCE550C481B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,10 +28,6 @@ Global
 		{13398089-F698-4FBD-93A7-DF7DB48D8E9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{13398089-F698-4FBD-93A7-DF7DB48D8E9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{13398089-F698-4FBD-93A7-DF7DB48D8E9E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DC8AAF50-D99E-4220-9DA4-5F7574CAAB9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DC8AAF50-D99E-4220-9DA4-5F7574CAAB9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DC8AAF50-D99E-4220-9DA4-5F7574CAAB9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DC8AAF50-D99E-4220-9DA4-5F7574CAAB9E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{21C8F4E7-933A-4B50-ADF5-5CCE550C481B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{21C8F4E7-933A-4B50-ADF5-5CCE550C481B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{21C8F4E7-933A-4B50-ADF5-5CCE550C481B}.Release|Any CPU.ActiveCfg = Release|Any CPU
