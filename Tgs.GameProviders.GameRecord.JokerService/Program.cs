@@ -6,7 +6,7 @@ using OpenTelemetry.Exporter;
 using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-using Tgs.GameProviders.GameRecord.JokerService.Core.DependencyInjection;
+using Tgs.GameProviders.GameRecord.JokerService;
 using Tgs.GameProviders.GameRecord.JokerService.ReceiveHandler;
 using Tgs.MessageQueue.MongoDB.Configuration;
 
@@ -38,25 +38,28 @@ builder.Services
     .AddJsonOptions(options
         => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
-builder.Services
-    .AddMemoryCache();
+builder.Services.AddMemoryCache();
 
 builder.Services
-    .AddJokerGameRecordService(
-        (options, sp) =>
-        {
-            var configuration = sp.GetRequiredService<IConfiguration>();
-            options.BaseUrl = configuration.GetValue<Uri>("GameRecord:GameProvidersBaseUrl");
-        },
-        (options, sp) =>
-        {
-            var configuration = sp.GetRequiredService<IConfiguration>();
-            options.BaseUrl = configuration.GetValue<Uri>("GameRecord:GameProvidersQueryServerBaseUrl");
-        })
-    .AddGameRecordMongoRepositories((options, sp) =>
+    .AddGameRecordCore((options, sp) =>
     {
         var configuration = sp.GetRequiredService<IConfiguration>();
-        options.ConnectionString = configuration.GetConnectionString("Mongo");
+        configuration.GetSection("GameRecordInfo").Bind(options);
+    },
+    (options, sp) =>
+    {
+        var configuration = sp.GetRequiredService<IConfiguration>();
+        options.BaseUrl = configuration.GetValue<Uri>("GameRecord:GameProvidersQueryServerBaseUrl");
+    },
+    (options, sp) =>
+    {
+        var configuration = sp.GetRequiredService<IConfiguration>();
+        options.BaseUrl = configuration.GetValue<Uri>("GameRecord:GameRecordSchedulesBaseUrl");
+    },
+    (options, sp) =>
+    {
+        var configuration = sp.GetRequiredService<IConfiguration>();
+        options.BaseUrl = configuration.GetValue<Uri>("GameRecord:GameProvidersBaseUrl");
     });
 
 builder.Services
@@ -97,6 +100,16 @@ builder.Services
                     MessageQueue = MessageQueue.Default
                 });
     })
+     .AddNatsMessageQueue(natsConfig =>
+     {
+         _ = natsConfig
+         .ConfigQueueOptions((options, sp) =>
+         {
+             var configuration = sp.GetRequiredService<IConfiguration>();
+             options.Url = configuration.GetConnectionString("Nats");
+         })
+         .AddProcessor<ManualMessageHandler>("gp.gamerecord.manual.jocker", "gp.gamerecord.manual");
+     })
     .ClearAllExchanges()
     .AddMongoGlobPatternExchange(
         "tgs.gp.gamerecord.database.round.joker",

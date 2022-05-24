@@ -8,7 +8,31 @@ data:
   appsettings.json: |
     {
       "GameRecord": {
-        "GameProvidersBaseUrl": "http://game-gameproviders",
-        "GameProvidersQueryServerBaseUrl": "http://game-gameprovider-queryserver"
+        "GameRecordSchedulesBaseUrl": "http://game-gamerecordschedules",
+        "GameProvidersQueryServerBaseUrl": "http://game-gameprovider-queryserver",
+        "GameProvidersBaseUrl": "http://game-gameproviders"
+      },
+      "GameRecordInfo": {
+        "GameProviderCode": "JOKER",
+        "GameProviderConfiguration": "JOKERConfiguration",
+        "IntervalMinuteMax": 60,
+        "IntervalMinute": 20
+      }
+    }
+  monitor.settings.json: |
+    {
+      "Metrics": {
+        "MetricCount": "1"
+      },
+      "Logging":{
+        "Console": {
+          "FormatterName": "json"
+        },
+        "LogLevel": {
+          "Default": "Warning",
+          "Microsoft": "Warning",
+          "Microsoft.Diagnostics": "Warning",
+          "Microsoft.Hosting.Lifetime": "Information"
+        }
       }
     }

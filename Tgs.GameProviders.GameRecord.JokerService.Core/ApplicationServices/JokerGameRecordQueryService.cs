@@ -50,25 +50,7 @@ internal class JokerGameRecordQueryService : IGetService<JokerGameRecordQuery, J
                 count++;
 
                 var isSuccess = await _getService.GetAsync(
-                        new JokerGameRoundHandleQuery(
-                            new GameRecordInfo(
-                                data.GameProviderCode,
-                                data.GameProviderId,
-                                data.PlayerCode,
-                                (QueryServer.Models.RoundStatus)data.Status,
-                                (QueryServer.Models.RoundClientStatus)data.ClientStatus,
-                                data.ExternalRoundId,
-                                data.ExternalGameId,
-                                data.ExternalCreatedOn,
-                                data.ExternalClosedOn,
-                                data.BetAmount,
-                                data.ValidBetAmount,
-                                data.PlayerWinLoss,
-                                data.Commission,
-                                data.Turnover,
-                                data.SettleAmount,
-                                data.TieBetAdjustment,
-                                data.AdditionalData)),
+                        new JokerGameRoundHandleQuery(data),
                         cancellationToken)
                     .ConfigureAwait(false);
 

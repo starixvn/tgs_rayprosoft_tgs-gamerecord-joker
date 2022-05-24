@@ -1,8 +1,8 @@
-﻿using Tgs.GameProviders.QueryServer.Models;
+﻿using Tgs.GameProviders.Client;
 
 namespace Tgs.GameProviders.GameRecord.JokerService.Core;
 
-public record GameRoundData
+public record GameRoundMessageRequest
 {
     public string ExternalRoundId { get; init; } = default!;
     public Guid GameProviderId { get; init; }
@@ -11,12 +11,9 @@ public record GameRoundData
     public int GameId { get; init; }
     public string ExternalGameId { get; init; } = default!;
     public string CurrencyCode { get; init; } = default!;
-    public RoundStatus Status { get; init; }
+    public GameRecordRoundStatus Status { get; init; }
     public Guid GameProviderConfigurationId { get; init; }
     public Guid WalletId { get; init; }
-    public DateTimeOffset CreatedOn { get; init; }
-    public DateTimeOffset? ClosedOn { get; init; }
-    public DateTimeOffset UpdatedOn { get; init; }
     public DateTimeOffset? ExternalCreatedOn { get; init; }
     public DateTimeOffset? ExternalClosedOn { get; init; }
     public Guid BrandId { get; init; }
@@ -26,8 +23,7 @@ public record GameRoundData
     public decimal? Commission { get; init; }
     public decimal? Turnover { get; init; }
     public decimal? PlayerWinLoss { get; init; }
-    public decimal? TieBetAdjustment { get; init; }
     public string AdditionalData { get; init; } = default!;
-    public RoundClientStatus ClientStatus { get; init; }
+    public GameRecordRoundClientStatus ClientStatus { get; init; }
     public bool Success { get; init; }
 }

@@ -1,25 +1,37 @@
 ﻿using System.Reflection;
-using Microsoft.Extensions.DependencyInjection;
 using Tgs.GameProviders.Client;
-using Tgs.GameProviders.GameRecord.JokerService.Core.MessageSenders;
+using Tgs.GameProviders.GameRecord.JokerService.Core;
 using Tgs.GameProviders.QueryServer.Client;
+using Tgs.GameRecordSchedules.Client;
 
-namespace Tgs.GameProviders.GameRecord.JokerService.Core.DependencyInjection;
+namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddJokerGameRecordService(this IServiceCollection services,
-        Action<GameProvidersClientOptions, IServiceProvider> gameProvidersClientOptions,
-        Action<GameProvidersQueryServerClientOptions, IServiceProvider> gameProvidersQueryServerClientOptions)
+    public static IServiceCollection AddGameRecordCore(
+       this IServiceCollection services,
+       Action<GameRecordInfoOptions, IServiceProvider> configure,
+       Action<GameProvidersQueryServerClientOptions, IServiceProvider> gameProvidersQueryServerClientOptions,
+       Action<GameRecordSchedulesClientOptions, IServiceProvider> gameRecordSchedulesClientOptions,
+       Action<GameProvidersClientOptions, IServiceProvider> gameProvidersClientOptions)
         => services
-            .RegisterAllServiceUtilityTypes(
-                Assembly.GetExecutingAssembly(),
-                ServiceLifetime.Transient)
-            .AddGameProvidersClient(gameProvidersClientOptions)
-            .AddGameProvidersQueryServerClient(gameProvidersQueryServerClientOptions)
-            .AddTransient<IPlayerService, PlayerService>()
-            .AddTransient<IGameProviderService, GameProviderService>()
-            .AddTransient<IGameService, GameService>()
-            .AddTransient<IJokerGameProviderScheduleService, JokerGameProviderScheduleService>()
-            .AddTransient<IGameRecordMessageSender, GameRecordMessageSender>();
+        .AddOptions<GameRecordInfoOptions>()
+        .Configure(configure)
+        .Services
+        .RegisterAllServiceUtilityTypes(
+            Assembly.GetExecutingAssembly(),
+            ServiceLifetime.Transient)
+        .Scan(scan =>
+        {
+            _ = scan.FromCallingAssembly()
+            .AddClasses(classes => classes.Where(t => t.Name.EndsWith("repository", StringComparison.OrdinalIgnoreCase)))
+            .AsImplementedInterfaces()
+            .WithTransientLifetime();
+        })
+        .AddGameProvidersQueryServerClient(gameProvidersQueryServerClientOptions)
+        .AddGameRecordSchedulesClient(gameRecordSchedulesClientOptions)
+        .AddGameProvidersClient(gameProvidersClientOptions)
+        .AddScoped<ISystemClock, SystemClock>()
+        .AddTransient<IUtensil, UtensilRepository>()
+        .Decorate<IUtensil>((innerRepository, sp) => ActivatorUtilities.CreateInstance<UtensilMemoryCacheRepository>(sp, innerRepository, TimeSpan.FromHours(1)));
 }

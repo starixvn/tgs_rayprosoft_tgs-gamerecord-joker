@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Tgs.GameProviders.GameRecord.JokerService.Core;
 using Tgs.GameProviders.GameRecord.JokerService.Core.ApplicationServices;
 using Tgs.GameProviders.GameRecord.JokerService.ViewModels;
 using Tgs.ServiceUtility;

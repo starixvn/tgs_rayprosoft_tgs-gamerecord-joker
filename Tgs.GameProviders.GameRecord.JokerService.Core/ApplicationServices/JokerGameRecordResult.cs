@@ -1,4 +1,4 @@
-﻿namespace Tgs.GameProviders.GameRecord.JokerService.Core;
+﻿namespace Tgs.GameProviders.GameRecord.JokerService.Core.ApplicationServices;
 
 public record JokerGameRecordResult(
     bool Success,
