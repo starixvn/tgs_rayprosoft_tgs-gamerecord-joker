@@ -10,7 +10,6 @@ RUN --mount=type=secret,id=nuget,dst=/pat cp /pat ~/.nuget/NuGet/NuGet.Config
 WORKDIR /src
 COPY ["nuget.config", "."]
 COPY ["Tgs.GameProviders.GameRecord.JokerService/Tgs.GameProviders.GameRecord.JokerService.csproj", "Tgs.GameProviders.GameRecord.JokerService/"]
-COPY ["Tgs.GameProviders.GameRecord.Repositories/Tgs.GameProviders.GameRecord.Repositories.csproj", "Tgs.GameProviders.GameRecord.Repositories/"]
 COPY ["Tgs.GameProviders.GameRecord.JokerService.Core/Tgs.GameProviders.GameRecord.JokerService.Core.csproj", "Tgs.GameProviders.GameRecord.JokerService.Core/"]
 RUN dotnet restore "Tgs.GameProviders.GameRecord.JokerService/Tgs.GameProviders.GameRecord.JokerService.csproj"
 COPY . .
