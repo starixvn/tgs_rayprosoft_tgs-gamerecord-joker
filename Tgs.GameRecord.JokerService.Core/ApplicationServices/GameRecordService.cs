@@ -30,11 +30,12 @@ internal class GameRecordService : IGetService<GameRecordQuery, GameRecordResult
         do
         {
             var response = await _gameRecordListClient.JokerGameRecordListAsync(
-                query.BrandCode,
-                query.AgentId,
-                query.StartTime,
-                query.EndTime,
-                nextId).ConfigureAwait(false);
+                brandCode: query.BrandCode,
+                agentId: query.AgentId,
+                startTime: query.StartTime,
+                endTime: query.EndTime,
+                nextId: nextId,
+                cancellationToken: cancellationToken).ConfigureAwait(false);
 
             if (response == null || !response.Success)
             {
