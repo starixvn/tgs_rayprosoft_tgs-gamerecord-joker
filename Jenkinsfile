@@ -6,7 +6,7 @@ pipeline {
 	
 	environment {
 		BuildConfiguration="Debug"
-        ImageName="harbor.rpgp.cc/tgs/game-gamerecord-joker-service"
+        ImageName="pgtgs/game-gamerecord-joker-service"
 	}
 
 	stages {

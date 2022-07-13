@@ -9,18 +9,17 @@ namespace Tgs.GameRecord.JokerService.Core
     {
         private readonly TimeSpan _absoluteExpirationRelativeToNow;
         private readonly GameRecordInfoOptions _gameRecordInfo;
-        private readonly IUtensil _kaiyuan;
         private readonly IMemoryCache _memoryCache;
+        private readonly IUtensil _utensil;
 
         public UtensilMemoryCacheRepository(
-            TimeSpan absoluteExpirationRelativeToNow,
             IOptions<GameRecordInfoOptions> options,
-            IUtensil kaiyuan,
+            IUtensil utensil,
             IMemoryCache memoryCache)
         {
-            _absoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow;
+            _absoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
             _gameRecordInfo = options.Value;
-            _kaiyuan = kaiyuan ?? throw new ArgumentNullException(nameof(kaiyuan));
+            _utensil = utensil ?? throw new ArgumentNullException(nameof(utensil));
             _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
         }
 
@@ -29,7 +28,7 @@ namespace Tgs.GameRecord.JokerService.Core
             var key = $"{_gameRecordInfo.GameProviderCode}:{brandId}:{gameProviderId}";
             if (!_memoryCache.TryGetValue(key, out Guid? gameProviderConfigurationId))
             {
-                gameProviderConfigurationId = await _kaiyuan.BrandGetGameProviderConfigurationIdAsync(brandId, gameProviderId).ConfigureAwait(false);
+                gameProviderConfigurationId = await _utensil.BrandGetGameProviderConfigurationIdAsync(brandId, gameProviderId).ConfigureAwait(false);
 
                 if (gameProviderConfigurationId == null)
                 {
@@ -45,7 +44,7 @@ namespace Tgs.GameRecord.JokerService.Core
             var key = $"{_gameRecordInfo.GameProviderCode}:{gameExternalId}";
             if (!_memoryCache.TryGetValue(key, out int? gameId))
             {
-                gameId = await _kaiyuan.GetGameIdAsync(gameProviderId, gameExternalId).ConfigureAwait(false);
+                gameId = await _utensil.GetGameIdAsync(gameProviderId, gameExternalId).ConfigureAwait(false);
 
                 if (gameId.HasValue)
                 {
@@ -59,7 +58,7 @@ namespace Tgs.GameRecord.JokerService.Core
         {
             if (!_memoryCache.TryGetValue(_gameRecordInfo.GameProviderCode, out Guid? gameProviderId))
             {
-                gameProviderId = await _kaiyuan.GetGameProviderIdAsync().ConfigureAwait(false);
+                gameProviderId = await _utensil.GetGameProviderIdAsync().ConfigureAwait(false);
 
                 if (gameProviderId.HasValue)
                 {
@@ -74,7 +73,7 @@ namespace Tgs.GameRecord.JokerService.Core
             var key = $"{_gameRecordInfo.GameProviderCode}:{playerCode}";
             if (!_memoryCache.TryGetValue(key, out PlayerModel? playerModel))
             {
-                playerModel = await _kaiyuan.GetPlayerAsync(playerCode).ConfigureAwait(false);
+                playerModel = await _utensil.GetPlayerAsync(playerCode).ConfigureAwait(false);
 
                 if (playerModel == null)
                 {
@@ -86,6 +85,6 @@ namespace Tgs.GameRecord.JokerService.Core
         }
 
         public ValueTask<JokerConfiguration> GetSettingConfigurationAsync()
-            => _kaiyuan.GetSettingConfigurationAsync();
+            => _utensil.GetSettingConfigurationAsync();
     }
 }
