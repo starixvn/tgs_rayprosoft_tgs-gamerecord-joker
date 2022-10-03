@@ -46,7 +46,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: tgs-connections
-                  key: mongo-gameprovider
+                  key: mongo-gp-scheduler-messaging
             - name: ConnectionStrings__MongoMessaging
               valueFrom:
                 secretKeyRef:
