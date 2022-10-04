@@ -42,16 +42,11 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.hostIP
-            - name: ConnectionStrings__Mongo
-              valueFrom:
-                secretKeyRef:
-                  name: tgs-connections
-                  key: mongo-gp-scheduler-messaging
             - name: ConnectionStrings__MongoMessaging
               valueFrom:
                 secretKeyRef:
                   name: tgs-connections
-                  key: mongo-messaging
+                  key: mongo-gp-scheduler-messaging
             - name: RabbitMQ__RabbitMQUrl
               valueFrom:
                 secretKeyRef:
