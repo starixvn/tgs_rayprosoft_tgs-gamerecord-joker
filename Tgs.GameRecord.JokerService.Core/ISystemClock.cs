@@ -1,7 +1,6 @@
-﻿namespace Tgs.GameRecord.JokerService.Core
+﻿namespace Tgs.GameRecord.JokerService.Core;
+
+public interface ISystemClock
 {
-    public interface ISystemClock
-    {
-        DateTimeOffset CurrentTime { get; }
-    }
+    DateTimeOffset CurrentTime { get; }
 }
