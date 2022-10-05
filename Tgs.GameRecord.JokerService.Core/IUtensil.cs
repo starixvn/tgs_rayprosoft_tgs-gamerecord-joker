@@ -1,18 +1,17 @@
 ﻿using Tgs.GameProviders.Domains.SettingConfiguration;
 using Tgs.GameProviders.QueryServer.Models;
 
-namespace Tgs.GameRecord.JokerService.Core
+namespace Tgs.GameRecord.JokerService.Core;
+
+public interface IUtensil
 {
-    public interface IUtensil
-    {
-        ValueTask<Guid?> BrandGetGameProviderConfigurationIdAsync(Guid brandId, Guid gameProviderId);
+    ValueTask<Guid?> BrandGetGameProviderConfigurationIdAsync(Guid brandId, Guid gameProviderId);
 
-        ValueTask<int?> GetGameIdAsync(Guid gameProviderId, string gameExternalId);
+    ValueTask<int?> GetGameIdAsync(Guid gameProviderId, string gameExternalId);
 
-        ValueTask<Guid> GetGameProviderIdAsync();
+    ValueTask<Guid> GetGameProviderIdAsync();
 
-        ValueTask<PlayerModel?> GetPlayerAsync(string playerCode);
+    ValueTask<PlayerModel?> GetPlayerAsync(string playerCode);
 
-        ValueTask<JokerConfiguration> GetSettingConfigurationAsync();
-    }
+    ValueTask<JokerConfiguration> GetSettingConfigurationAsync();
 }

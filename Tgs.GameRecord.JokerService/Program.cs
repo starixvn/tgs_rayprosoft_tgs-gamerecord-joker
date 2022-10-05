@@ -1,12 +1,14 @@
+using System.Net.Mime;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
 using MongoDB.Messaging;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Tgs.GameRecord.JokerService;
+using Tgs.GameRecord.JokerService.Core;
 using Tgs.MessageQueue.MongoDB.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,11 +33,27 @@ builder.Logging
         });
     });
 
+// Add services to the container.
+
 builder.Services
     .AddRouting(options => options.LowercaseUrls = true)
-    .AddControllers()
-    .AddJsonOptions(options
-        => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+    .AddControllers(options =>
+    {
+        options.Filters.Add(new ProducesAttribute(MediaTypeNames.Application.Json));
+        options.Filters.Add(new ConsumesAttribute(MediaTypeNames.Application.Json));
+    })
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
+
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c =>
+{
+    var xmlFileNames = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.xml");
+    foreach (var xmlFileName in xmlFileNames) c.IncludeXmlComments(xmlFileName);
+});
 
 builder.Services.AddMemoryCache();
 
@@ -60,6 +78,8 @@ builder.Services
         var configuration = sp.GetRequiredService<IConfiguration>();
         options.BaseUrl = configuration.GetValue<Uri>("GameRecord:GameProvidersBaseUrl");
     });
+
+var gameRecordInfo = builder.Configuration.GetSection("GameRecordInfo").Get<GameRecordInfoOptions>();
 
 builder.Services
     .AddMessageQueue()
@@ -92,28 +112,15 @@ builder.Services
     {
         _ = config
             .DefineMessageQueue(
-                "gp.gamerecord.database",
+                gameRecordInfo.MongoDefine,
                 sp => new MongoMessageQueueBuilderOptions
                 {
                     ConnectionString = sp.GetRequiredService<IConfiguration>().GetConnectionString("MongoMessaging"),
                     MessageQueue = MessageQueue.Default
                 });
     })
-     .AddNatsMessageQueue(natsConfig =>
-     {
-         _ = natsConfig
-         .ConfigQueueOptions((options, sp) =>
-         {
-             var configuration = sp.GetRequiredService<IConfiguration>();
-             options.Url = configuration.GetConnectionString("Nats");
-         })
-         .AddProcessor<ManualMessageHandler>("gp.gamerecord.manual.joker", "gp.gamerecord.manual");
-     })
     .ClearAllExchanges()
-    .AddMongoGlobPatternExchange(
-        "tgs.gp.gamerecord.database.round.joker",
-        "gp.gamerecord.database",
-        "tgs.gp.gamerecord.database.round.joker");
+    .AddMongoGlobPatternExchange(gameRecordInfo.MongoGlobPattern, gameRecordInfo.MongoDefine, gameRecordInfo.MongoGlobPattern);
 
 builder.Services
     .AddSingleton<IConfigureOptions<OtlpExporterOptions>>(
@@ -146,25 +153,11 @@ builder.Services
                    || !httpContext.Request.Path.StartsWithSegments("/swagger")
                    && !httpContext.Request.Path.StartsWithSegments("/healthz")
                    && !httpContext.Request.Path.StartsWithSegments("/profiler/")
+                   && !httpContext.Request.Path.StartsWithSegments("/metrics")
                    && !new[] { "html", "ico", "png", "jpg" }.Any(
                        ext => httpContext.Request.Path.Value.EndsWith($".{ext}"));
         };
     });
-
-builder.Services.AddSwaggerGen(options =>
-{
-    var xmlFileNames = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.xml");
-    foreach (var xmlFileName in xmlFileNames)
-    {
-        options.IncludeXmlComments(xmlFileName);
-    }
-
-    options.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title = "Joker GameRecord Service",
-        Version = "v1"
-    });
-});
 
 builder.Services.AddHealthChecks();
 
