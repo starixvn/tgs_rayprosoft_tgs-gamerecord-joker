@@ -1,4 +1,4 @@
-﻿namespace Tgs.GameRecord.JokerService.ViewModels;
+﻿namespace Tgs.GameRecord.JokerManualService.ViewModels;
 
 public record JokerGameRecordViewModel(
     string BrandCode,

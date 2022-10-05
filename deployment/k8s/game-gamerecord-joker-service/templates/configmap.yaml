@@ -16,7 +16,9 @@ data:
         "GameProviderCode": "JOKER",
         "GameProviderConfiguration": "JOKERConfiguration",
         "IntervalMinuteMax": 60,
-        "IntervalMinute": 20
+        "IntervalMinute": 20,
+        "MongoDefine": "gp.gamerecord.database",
+        "MongoGlobPattern": "tgs.gp.gamerecord.database.round.joker"
       }
     }
   monitor.settings.json: |
