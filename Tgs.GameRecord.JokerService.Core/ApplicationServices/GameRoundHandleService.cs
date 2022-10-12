@@ -24,7 +24,7 @@ internal class GameRoundHandleService : IGetService<GameRoundHandleQuery, bool>
         _messageSender = messageSender ?? throw new ArgumentNullException(nameof(messageSender));
         _utensil = utensil ?? throw new ArgumentNullException(nameof(utensil));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _subject = $"tgs.gp.gamerecord.database.round.{_gameRecordInfo.GameProviderCode.ToLower()}";
+        _subject = _gameRecordInfo.MongoGlobPattern;
     }
 
     public async ValueTask<bool> GetAsync(
