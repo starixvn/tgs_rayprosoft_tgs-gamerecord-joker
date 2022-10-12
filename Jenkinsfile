@@ -109,10 +109,12 @@ pipeline {
                         def resources = getResources(env.k8s_config, env.kube_ns, "game-gamerecord-joker-service")
                         def dedicated = getTgsSettings(env.k8s_config, env.kube_ns, "dedicated")
                         def node_selector = getTgsSettings(env.k8s_config, env.kube_ns, "node-selector")
-                        
+                        def autoscaling = getAutoscaling(env.k8s_config, env.kube_ns, "game-gamerecord-joker-service")
+
                         println resources
                         println dedicated
                         println node_selector
+                        println autoscaling
 
                         sh """
                             cat << EOF | yq e -P | helm template deployment/k8s/game-gamerecord-joker-service \
@@ -122,7 +124,8 @@ pipeline {
                             {
                                 "nodeSelector": $node_selector,
                                 "tolerations": [$dedicated],
-                                "resources": $resources
+                                "resources": $resources,
+                                "autoscaling": $autoscaling
                             }
                         """
                         sh """
@@ -134,7 +137,8 @@ pipeline {
                             {
                                 "nodeSelector": $node_selector,
                                 "tolerations": [$dedicated],
-                                "resources": $resources
+                                "resources": $resources,
+                                "autoscaling": $autoscaling
                             }
                         """
                     }
