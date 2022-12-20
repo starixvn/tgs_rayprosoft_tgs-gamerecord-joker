@@ -1,12 +1,12 @@
 variables:
-  ImageServiceName: pgtgs/game-gamerecord-saba-service
-  SettingServiceKey: game-gamerecord-saba-service
-  HelmTemplateFolderServiceName: game-gamerecord-saba-service
+  ImageServiceName: pgtgs/game-gamerecord-joker-service
+  SettingServiceKey: game-gamerecord-joker-service
+  HelmTemplateFolderServiceName: game-gamerecord-joker-service
 
-  ImageManualName: pgtgs/game-gamerecord-saba-manualservice
-  SettingManualKey: game-gamerecord-saba-manualservice
-  HelmTemplateFolderManualName: game-gamerecord-saba-manualservice
-  BuildCacheKey: Tgs.GameRecord.SabaService.$CI_PIPELINE_ID
+  ImageManualName: pgtgs/game-gamerecord-joker-manualservice
+  SettingManualKey: game-gamerecord-joker-manualservice
+  HelmTemplateFolderManualName: game-gamerecord-joker-manualservice
+  BuildCacheKey: Tgs.GameRecord.JokerService.$CI_PIPELINE_ID
 
 default:
   before_script:
@@ -66,9 +66,9 @@ push-docker-image:
     untracked: true   
     policy: pull
   script:
-    - dotnet build "Tgs.GameRecord.SabaService/Tgs.GameRecord.SabaService.csproj" -c $BuildConfiguration -t:ContainerBuild -p:DockerfileTag="$ImageServiceName:$Tag" --no-restore
+    - dotnet build "Tgs.GameRecord.JokerService/Tgs.GameRecord.JokerService.csproj" -c $BuildConfiguration -t:ContainerBuild -p:DockerfileTag="$ImageServiceName:$Tag" --no-restore
     - docker push $ImageServiceName:$Tag
-    - dotnet build "Tgs.GameRecord.SabaManualService/Tgs.GameRecord.SabaManualService.csproj" -c $BuildConfiguration -t:ContainerBuild -p:DockerfileTag="$ImageManualName:$Tag" --no-restore
+    - dotnet build "Tgs.GameRecord.JokerManualService/Tgs.GameRecord.JokerManualService.csproj" -c $BuildConfiguration -t:ContainerBuild -p:DockerfileTag="$ImageManualName:$Tag" --no-restore
     - docker push $ImageManualName:$Tag
 
 
