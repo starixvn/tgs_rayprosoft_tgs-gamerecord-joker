@@ -90,20 +90,20 @@ builder.Services
                 gameRecordInfo.MongoDefine,
                 sp => new MongoMessageQueueBuilderOptions
                 {
-                    ConnectionString = sp.GetRequiredService<IConfiguration>().GetConnectionString("MongoMessaging"),
+                    ConnectionString = sp.GetRequiredService<IConfiguration>().GetConnectionString("MongoMessaging")!,
                     MessageQueue = MessageQueue.Default
                 });
     })
-     .AddNatsMessageQueue(natsConfig =>
-     {
-         _ = natsConfig
-         .ConfigQueueOptions((options, sp) =>
-         {
-             var configuration = sp.GetRequiredService<IConfiguration>();
-             options.Url = configuration.GetConnectionString("Nats");
-         })
-         .AddProcessor<ManualMessageHandler>("gp.gamerecord.manual.joker", "gp.gamerecord.manual");
-     })
+    .AddNatsMessageQueue(natsConfig =>
+    {
+        _ = natsConfig
+        .ConfigQueueOptions((options, sp) =>
+        {
+            var configuration = sp.GetRequiredService<IConfiguration>();
+            options.Url = configuration.GetConnectionString("Nats")!;
+        })
+        .AddProcessor<ManualMessageHandler>("gp.gamerecord.manual.joker", "gp.gamerecord.manual");
+    })
     .ClearAllExchanges()
     .AddMongoGlobPatternExchange(gameRecordInfo.MongoGlobPattern, gameRecordInfo.MongoDefine, gameRecordInfo.MongoGlobPattern);
 

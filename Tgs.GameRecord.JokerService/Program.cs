@@ -83,30 +83,15 @@ var gameRecordInfo = builder.Configuration.GetSection("GameRecordInfo").Get<Game
 
 builder.Services
     .AddMessageQueue()
-    .AddRabbitMessageQueue(config =>
+    .AddNatsMessageQueue(natsConfig =>
     {
-        _ = config.ConfigQueueOptions((options, sp) =>
+        _ = natsConfig
+        .ConfigQueueOptions((options, sp) =>
         {
             var configuration = sp.GetRequiredService<IConfiguration>();
-
-            configuration.GetSection("RabbitMQ").Bind(options);
-
-            options.OnSetupQueueAndExchange = channel =>
-            {
-                _ = channel.QueueDeclare(
-                    "gp.gamerecord.joker",
-                    true,
-                    false,
-                    false,
-                    null);
-
-                channel.QueueBind(
-                    "gp.gamerecord.joker",
-                    "amq.direct",
-                    "tgs.gp.gamerecord.joker",
-                    new Dictionary<string, object>());
-            };
-        }).AddHandler<ScheduleMessageHandler>("gp.gamerecord.joker");
+            options.Url = configuration.GetConnectionString("Nats")!;
+        })
+        .AddHandler<ScheduleMessageHandler>("gp.gamerecord.schedule.joker", "gp.gamerecord.schedule");
     })
     .AddMongoMessageQueue(config =>
     {
@@ -115,7 +100,7 @@ builder.Services
                 gameRecordInfo.MongoDefine,
                 sp => new MongoMessageQueueBuilderOptions
                 {
-                    ConnectionString = sp.GetRequiredService<IConfiguration>().GetConnectionString("MongoMessaging"),
+                    ConnectionString = sp.GetRequiredService<IConfiguration>().GetConnectionString("MongoMessaging")!,
                     MessageQueue = MessageQueue.Default
                 });
     })

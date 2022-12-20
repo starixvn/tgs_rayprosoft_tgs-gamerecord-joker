@@ -22,7 +22,7 @@ internal class GameRoundHandleServiceUnitTest
         {
             GameProviderCode = GameProviderType.Joker,
             GameProviderConfiguration = GameProviderConfigurations.Joker,
-            MongoDefine= "gp.gamerecord.database",
+            MongoDefine = "gp.gamerecord.database",
             MongoGlobPattern = "tgs.gp.gamerecord.database.round.joker",
             IntervalMinuteMax = 60,
             IntervalMinute = 20

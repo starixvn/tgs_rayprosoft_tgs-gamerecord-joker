@@ -7,17 +7,17 @@ namespace Tgs.GameRecord.JokerService.Core;
 
 internal class GameRecordScheduleRepository : IGameRecordSchedule
 {
+    private readonly IGameRecordSchedulesClient _client;
     private readonly GameRecordInfoOptions _gameRecordInfo;
-    private readonly IGameRecordSchedulesGrpc _gameRecordSchedulesGrpc;
     private readonly ISystemClock _systemClock;
 
     public GameRecordScheduleRepository(
         IOptions<GameRecordInfoOptions> options,
-        IGameRecordSchedulesGrpc gameRecordSchedulesGrpc,
+        IGameRecordSchedulesClient client,
         ISystemClock systemClock)
     {
         _gameRecordInfo = options.Value;
-        _gameRecordSchedulesGrpc = gameRecordSchedulesGrpc ?? throw new ArgumentNullException(nameof(gameRecordSchedulesGrpc));
+        _client = client ?? throw new ArgumentNullException(nameof(client));
         _systemClock = systemClock ?? throw new ArgumentNullException(nameof(systemClock));
     }
 
@@ -30,7 +30,7 @@ internal class GameRecordScheduleRepository : IGameRecordSchedule
             GameProviderAgentId = gameProviderAgentId,
             CurrencyCode = currencyCode
         };
-        return _gameRecordSchedulesGrpc.GameRecordScheduleGetAsync(request, cancellationToken);
+        return _client.GameRecordScheduleGetAsync(request, cancellationToken);
     }
 
     public ScheduleConfig GetConfig(GameRecordScheduleReply gameProviderSchedule)
@@ -57,7 +57,7 @@ internal class GameRecordScheduleRepository : IGameRecordSchedule
             Config = JsonSerializer.Serialize(config)
         };
 
-        _ = await _gameRecordSchedulesGrpc.GameRecordScheduleAddAsync(addRequest, cancellationToken).ConfigureAwait(false);
+        _ = await _client.GameRecordScheduleAddAsync(addRequest, cancellationToken).ConfigureAwait(false);
 
         return await GetAsync(brandCode, gameProviderAgentId, currencyCode, cancellationToken).ConfigureAwait(false);
     }
@@ -86,7 +86,7 @@ internal class GameRecordScheduleRepository : IGameRecordSchedule
             Config = JsonSerializer.Serialize(config)
         };
 
-        var updateResult = await _gameRecordSchedulesGrpc.GameRecordScheduleUpdateAsync(request, cancellationToken).ConfigureAwait(false);
+        var updateResult = await _client.GameRecordScheduleUpdateAsync(request, cancellationToken).ConfigureAwait(false);
         return updateResult.Success
             ? await GetAsync(gameProviderSchedule.BrandCode, gameProviderSchedule.GameProviderAgentId, gameProviderSchedule.CurrencyCode, cancellationToken).ConfigureAwait(false)
             : null;
