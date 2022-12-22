@@ -262,4 +262,3 @@ resharper_xmldoc_indent_text = DoNotTouch
 resharper_xmldoc_keep_user_linebreaks = true
 resharper_xmldoc_linebreaks_inside_tags_for_multiline_elements = false
 resharper_xmldoc_wrap_around_elements = false
-
