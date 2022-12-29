@@ -4,9 +4,9 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using NUnit.Framework;
+using Tgs.GameCommand.Common;
 using Tgs.GameProviders.Client;
 using Tgs.GameProviders.Domains;
-using Tgs.GameProviders.QueryServer.Models;
 using Tgs.GameRecord.JokerService.Core.ApplicationServices;
 using Tgs.MessageQueue;
 
@@ -18,7 +18,7 @@ internal class GameRoundHandleServiceUnitTest
     [Test]
     public async Task Normal_Process()
     {
-        var fakeOptions = Options.Create<GameRecordInfoOptions>(new GameRecordInfoOptions()
+        var fakeOptions = Options.Create(new GameRecordInfoOptions()
         {
             GameProviderCode = GameProviderType.Joker,
             GameProviderConfiguration = GameProviderConfigurations.Joker,
@@ -52,7 +52,7 @@ internal class GameRoundHandleServiceUnitTest
             AdditionalData = string.Empty
         };
 
-        var playerInfo = new PlayerModel(
+        var playerInfo = new PlayerInfo(
             Guid.NewGuid(),
             "TGS",
             Guid.NewGuid(),
@@ -62,8 +62,7 @@ internal class GameRoundHandleServiceUnitTest
             gameRecord.PlayerCode,
             gameRecord.PlayerCode,
             Guid.Parse("cf99c783-acdf-48cc-b1cc-08d99a806de9"),
-            "HKD",
-            PlayerStatus.Enabled);
+            "HKD");
 
         _ = fakeUtensil.GetGameProviderIdAsync()
             .Returns(gameRecord.GameProviderId);

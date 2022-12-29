@@ -1,5 +1,5 @@
-﻿using Tgs.GameProviders.Domains.SettingConfiguration;
-using Tgs.GameProviders.QueryServer.Models;
+﻿using Tgs.GameCommand.Common;
+using Tgs.GameProviders.Domains.SettingConfiguration;
 
 namespace Tgs.GameRecord.JokerService.Core;
 
@@ -11,7 +11,7 @@ public interface IUtensil
 
     ValueTask<Guid> GetGameProviderIdAsync();
 
-    ValueTask<PlayerModel?> GetPlayerAsync(string playerCode);
+    ValueTask<PlayerInfo?> GetPlayerAsync(string playerCode);
 
     ValueTask<JokerConfiguration> GetSettingConfigurationAsync();
 }

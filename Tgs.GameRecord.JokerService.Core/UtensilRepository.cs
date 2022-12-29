@@ -1,17 +1,17 @@
 ﻿using Microsoft.Extensions.Options;
+using Tgs.GameCommand.Client;
+using Tgs.GameCommand.Common;
 using Tgs.GameProviders.Domains.SettingConfiguration;
-using Tgs.GameProviders.QueryServer.Client;
-using Tgs.GameProviders.QueryServer.Models;
 
 namespace Tgs.GameRecord.JokerService.Core;
 
 internal class UtensilRepository : IUtensil
 {
-    private readonly IGameProvidersQueryServerClient _client;
+    private readonly IGameCommandClient _client;
     private readonly GameRecordInfoOptions _gameRecordInfo;
 
     public UtensilRepository(
-        IGameProvidersQueryServerClient client,
+        IGameCommandClient client,
         IOptions<GameRecordInfoOptions> options)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
@@ -33,7 +33,7 @@ internal class UtensilRepository : IUtensil
         return gameProviderId!.Value;
     }
 
-    public ValueTask<PlayerModel?> GetPlayerAsync(string playerCode)
+    public ValueTask<PlayerInfo?> GetPlayerAsync(string playerCode)
         => _client.PlayerGetAsync(playerCode);
 
     public ValueTask<JokerConfiguration> GetSettingConfigurationAsync()

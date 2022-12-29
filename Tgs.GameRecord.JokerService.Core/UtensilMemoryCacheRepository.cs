@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
+using Tgs.GameCommand.Common;
 using Tgs.GameProviders.Domains.SettingConfiguration;
-using Tgs.GameProviders.QueryServer.Models;
 
 namespace Tgs.GameRecord.JokerService.Core;
 
@@ -68,10 +68,10 @@ internal class UtensilMemoryCacheRepository : IUtensil
         return gameProviderId!.Value;
     }
 
-    public async ValueTask<PlayerModel?> GetPlayerAsync(string playerCode)
+    public async ValueTask<PlayerInfo?> GetPlayerAsync(string playerCode)
     {
         var key = $"{_gameRecordInfo.GameProviderCode}:{playerCode}";
-        if (!_memoryCache.TryGetValue(key, out PlayerModel? playerModel))
+        if (!_memoryCache.TryGetValue(key, out PlayerInfo? playerModel))
         {
             playerModel = await _utensil.GetPlayerAsync(playerCode).ConfigureAwait(false);
 

@@ -1,4 +1,4 @@
-apiVersion: v1
+﻿apiVersion: v1
 kind: ConfigMap
 metadata:
   name: configmap-{{ include "game-gamerecord-joker-service.fullname" . }}
@@ -9,7 +9,7 @@ data:
     {
       "GameRecord": {
         "GameRecordSchedulesBaseUrl": "http://game-gamerecordschedules",
-        "GameProvidersQueryServerBaseUrl": "http://game-gameprovider-queryserver",
+        "GameCommandClientBaseUrl": "http://game-gamecommand/",
         "GameProvidersBaseUrl": "http://game-gameproviders"
       },
       "GameRecordInfo": {

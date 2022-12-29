@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
+using Tgs.GameCommand.Client;
 using Tgs.GameProviders.Client;
-using Tgs.GameProviders.QueryServer.Client;
 using Tgs.GameRecord.JokerService.Core;
 using Tgs.GameRecordSchedules.Client;
 
@@ -11,7 +11,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddGameRecordCore(
        this IServiceCollection services,
        Action<GameRecordInfoOptions, IServiceProvider> configure,
-       Action<GameProvidersQueryServerClientOptions, IServiceProvider> gameProvidersQueryServerClientOptions,
+       Action<GameCommandClientOptions, IServiceProvider> gameCommandClientOptions,
        Action<GameRecordSchedulesClientOptions, IServiceProvider> gameRecordSchedulesClientOptions,
        Action<GameProvidersClientOptions, IServiceProvider> gameProvidersClientOptions)
         => services
@@ -28,7 +28,7 @@ public static class ServiceCollectionExtensions
             .AsImplementedInterfaces()
             .WithTransientLifetime();
         })
-        .AddGameProvidersQueryServerClient(gameProvidersQueryServerClientOptions)
+        .AddGameCommandClient(gameCommandClientOptions)
         .AddGameRecordSchedulesClient(gameRecordSchedulesClientOptions)
         .AddGameProvidersClient(gameProvidersClientOptions)
         .AddScoped<ISystemClock, SystemClock>()
