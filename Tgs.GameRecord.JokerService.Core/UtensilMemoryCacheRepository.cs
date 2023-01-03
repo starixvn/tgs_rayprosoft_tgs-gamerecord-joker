@@ -23,12 +23,20 @@ internal class UtensilMemoryCacheRepository : IUtensil
         _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
     }
 
-    public async ValueTask<Guid?> BrandGetGameProviderConfigurationIdAsync(Guid brandId, Guid gameProviderId)
+    public async ValueTask<Guid?> BrandGetGameProviderConfigurationIdAsync(
+        Guid brandId,
+        Guid gameProviderId,
+        CancellationToken cancellationToken = default)
     {
         var key = $"{_gameRecordInfo.GameProviderCode}:{brandId}:{gameProviderId}";
         if (!_memoryCache.TryGetValue(key, out Guid? gameProviderConfigurationId))
         {
-            gameProviderConfigurationId = await _utensil.BrandGetGameProviderConfigurationIdAsync(brandId, gameProviderId).ConfigureAwait(false);
+            gameProviderConfigurationId = await _utensil
+                .BrandGetGameProviderConfigurationIdAsync(
+                    brandId: brandId,
+                    gameProviderId: gameProviderId,
+                    cancellationToken: cancellationToken)
+                .ConfigureAwait(false);
 
             if (gameProviderConfigurationId == null)
             {
@@ -39,12 +47,20 @@ internal class UtensilMemoryCacheRepository : IUtensil
         return gameProviderConfigurationId;
     }
 
-    public async ValueTask<int?> GetGameIdAsync(Guid gameProviderId, string gameExternalId)
+    public async ValueTask<int?> GetGameIdAsync(
+        Guid gameProviderId,
+        string gameExternalId,
+        CancellationToken cancellationToken = default)
     {
         var key = $"{_gameRecordInfo.GameProviderCode}:{gameExternalId}";
         if (!_memoryCache.TryGetValue(key, out int? gameId))
         {
-            gameId = await _utensil.GetGameIdAsync(gameProviderId, gameExternalId).ConfigureAwait(false);
+            gameId = await _utensil
+                .GetGameIdAsync(
+                    gameProviderId: gameProviderId,
+                    gameExternalId: gameExternalId,
+                    cancellationToken: cancellationToken)
+                .ConfigureAwait(false);
 
             if (gameId.HasValue)
             {
@@ -54,26 +70,32 @@ internal class UtensilMemoryCacheRepository : IUtensil
         return gameId;
     }
 
-    public async ValueTask<Guid> GetGameProviderIdAsync()
+    public async ValueTask<Guid> GetGameProviderIdAsync(
+        CancellationToken cancellationToken = default)
     {
         if (!_memoryCache.TryGetValue(_gameRecordInfo.GameProviderCode, out Guid? gameProviderId))
         {
-            gameProviderId = await _utensil.GetGameProviderIdAsync().ConfigureAwait(false);
-
-            if (gameProviderId.HasValue)
-            {
-                _ = _memoryCache.Set(_gameRecordInfo.GameProviderCode, gameProviderId, TimeSpan.FromDays(1));
-            }
+            gameProviderId = await _utensil
+                .GetGameProviderIdAsync(
+                    cancellationToken: cancellationToken)
+                .ConfigureAwait(false);
+            _ = _memoryCache.Set(_gameRecordInfo.GameProviderCode, gameProviderId);
         }
         return gameProviderId!.Value;
     }
 
-    public async ValueTask<PlayerInfo?> GetPlayerAsync(string playerCode)
+    public async ValueTask<PlayerInfo?> GetPlayerAsync(
+        string playerCode,
+        CancellationToken cancellationToken = default)
     {
         var key = $"{_gameRecordInfo.GameProviderCode}:{playerCode}";
         if (!_memoryCache.TryGetValue(key, out PlayerInfo? playerModel))
         {
-            playerModel = await _utensil.GetPlayerAsync(playerCode).ConfigureAwait(false);
+            playerModel = await _utensil
+                .GetPlayerAsync(
+                    playerCode,
+                    cancellationToken)
+                .ConfigureAwait(false);
 
             if (playerModel == null)
             {
@@ -84,6 +106,8 @@ internal class UtensilMemoryCacheRepository : IUtensil
         return playerModel;
     }
 
-    public ValueTask<JokerConfiguration> GetSettingConfigurationAsync()
-        => _utensil.GetSettingConfigurationAsync();
+    public ValueTask<JokerConfiguration> GetSettingConfigurationAsync(
+        CancellationToken cancellationToken = default)
+        => _utensil.GetSettingConfigurationAsync(
+            cancellationToken);
 }

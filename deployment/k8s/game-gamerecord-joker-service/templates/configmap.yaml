@@ -7,11 +7,6 @@ metadata:
 data:
   appsettings.json: |
     {
-      "GameRecord": {
-        "GameRecordSchedulesBaseUrl": "http://game-gamerecordschedules",
-        "GameCommandClientBaseUrl": "http://game-gamecommand/",
-        "GameProvidersBaseUrl": "http://game-gameproviders"
-      },
       "GameRecordInfo": {
         "GameProviderCode": "JOKER",
         "GameProviderConfiguration": "JOKERConfiguration",
@@ -19,6 +14,11 @@ data:
         "IntervalMinute": 20,
         "MongoDefine": "gp.gamerecord.database",
         "MongoGlobPattern": "tgs.gp.gamerecord.database.round.joker"
+      },
+      "GameRecord": {
+        "GameRecordSchedulesBaseUrl": "http://game-gamerecordschedules:9090/",
+        "GameCommandClientBaseUrl": "http://game-gamecommand/",
+        "GameProvidersBaseUrl": "http://game-gameproviders/"
       }
     }
   monitor.settings.json: |

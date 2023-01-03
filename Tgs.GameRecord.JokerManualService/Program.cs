@@ -156,4 +156,6 @@ app.UseSwaggerUI();
 
 app.MapHealthChecks("/healthz");
 
+_ = app.UseGameRecordRegister();
+
 app.Run();
