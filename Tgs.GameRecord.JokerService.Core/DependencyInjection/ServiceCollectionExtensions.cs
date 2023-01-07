@@ -9,29 +9,27 @@ namespace Microsoft.Extensions.DependencyInjection;
 public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddGameRecordCore(
-       this IServiceCollection services,
-       Action<GameRecordInfoOptions, IServiceProvider> configure,
-       Action<GameCommandClientOptions, IServiceProvider> gameCommandClientOptions,
-       Action<GameRecordSchedulesClientOptions, IServiceProvider> gameRecordSchedulesClientOptions,
-       Action<GameProvidersClientOptions, IServiceProvider> gameProvidersClientOptions)
+        this IServiceCollection services,
+        Action<GameRecordInfoOptions, IServiceProvider> gameRecordInfoOptions,
+        Action<MongoSettingOptions, IServiceProvider> mongoSettingOptions,
+        Action<GameCommandClientOptions, IServiceProvider> gameCommandClientOptions,
+        Action<GameRecordSchedulesClientOptions, IServiceProvider> gameRecordSchedulesClientOptions,
+        Action<GameProvidersClientOptions, IServiceProvider> gameProvidersClientOptions)
         => services
-        .AddOptions<GameRecordInfoOptions>()
-        .Configure(configure)
-        .Services
-        .RegisterAllServiceUtilityTypes(
-            Assembly.GetExecutingAssembly(),
-            ServiceLifetime.Transient)
-        .Scan(scan =>
-        {
-            _ = scan.FromCallingAssembly()
-            .AddClasses(classes => classes.Where(t => t.Name.EndsWith("repository", StringComparison.OrdinalIgnoreCase)))
-            .AsImplementedInterfaces()
-            .WithTransientLifetime();
-        })
-        .AddGameCommandClient(gameCommandClientOptions)
-        .AddGameRecordSchedulesClient(gameRecordSchedulesClientOptions)
-        .AddGameProvidersClient(gameProvidersClientOptions)
-        .AddScoped<ISystemClock, SystemClock>()
-        .AddTransient<IUtensil, UtensilRepository>()
-        .Decorate<IUtensil>((innerRepository, sp) => ActivatorUtilities.CreateInstance<UtensilMemoryCacheRepository>(sp, innerRepository));
+            .AddOptions<GameRecordInfoOptions>()
+            .Configure(gameRecordInfoOptions)
+            .Services
+            .AddOptions<MongoSettingOptions>()
+            .Configure(mongoSettingOptions)
+            .Services
+            .RegisterAllServiceUtilityTypes(
+                Assembly.GetExecutingAssembly(),
+                ServiceLifetime.Transient)
+            .AddMemoryCache()
+            .AddGameCommandClient(gameCommandClientOptions)
+            .AddGameRecordSchedulesClient(gameRecordSchedulesClientOptions)
+            .AddGameProvidersClient(gameProvidersClientOptions)
+            .AddScoped<ISystemClock, SystemClock>()
+            .AddScoped<IGameRecordSchedule, GameRecordScheduleRepository>()
+            .AddTransient<IUtensil>(sp => ActivatorUtilities.CreateInstance<UtensilRepository>(sp, TimeSpan.FromHours(1)));
 }

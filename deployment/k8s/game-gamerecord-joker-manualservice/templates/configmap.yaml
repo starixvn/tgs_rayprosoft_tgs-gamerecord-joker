@@ -10,10 +10,9 @@ data:
       "GameRecordInfo": {
         "GameProviderCode": "JOKER",
         "GameProviderConfiguration": "JOKERConfiguration",
-        "IntervalMinuteMax": 60,
-        "IntervalMinute": 20,
-        "MongoDefine": "gp.gamerecord.database.manual",
-        "MongoGlobPattern": "tgs.gp.gamerecord.database.manual.joker"
+        "IntervalMinutes": 20,
+        "IntervalMinutesMax": 60,
+        "IntervalMinutesMinimum": 11
       },
       "GameRecord": {
         "GameRecordSchedulesBaseUrl": "http://game-gamerecordschedules:9090/",

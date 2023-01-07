@@ -46,22 +46,20 @@ builder.Services
     {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
-
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-{
-    var xmlFileNames = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.xml");
-    foreach (var xmlFileName in xmlFileNames) c.IncludeXmlComments(xmlFileName);
-});
-
-builder.Services.AddMemoryCache();
+builder.Services.AddSwaggerGen();
 
 builder.Services
     .AddGameRecordCore((options, sp) =>
     {
         var configuration = sp.GetRequiredService<IConfiguration>();
         configuration.GetSection("GameRecordInfo").Bind(options);
+    },
+    (options, sp) =>
+    {
+        var configuration = sp.GetRequiredService<IConfiguration>();
+        configuration.GetSection("MongoSetting").Bind(options);
     },
     (options, sp) =>
     {
@@ -79,10 +77,22 @@ builder.Services
         options.BaseUrl = configuration.GetValue<Uri>("GameRecord:GameProvidersBaseUrl");
     });
 
-var gameRecordInfo = builder.Configuration.GetSection("GameRecordInfo").Get<GameRecordInfoOptions>();
+var mongoSetting = builder.Configuration.GetSection("MongoSetting").Get<MongoSettingOptions>();
+var natsSetting = builder.Configuration.GetSection("NatsSetting").Get<NatsSettingOptions>();
 
 builder.Services
     .AddMessageQueue()
+    .AddMongoMessageQueue(config =>
+    {
+        _ = config
+            .DefineMessageQueue(
+                mongoSetting.ManagerName,
+                sp => new MongoMessageQueueBuilderOptions
+                {
+                    ConnectionString = sp.GetRequiredService<IConfiguration>().GetConnectionString("MongoMessaging")!,
+                    MessageQueue = MessageQueue.Default
+                });
+    })
     .AddNatsMessageQueue(natsConfig =>
     {
         _ = natsConfig
@@ -91,21 +101,10 @@ builder.Services
             var configuration = sp.GetRequiredService<IConfiguration>();
             options.Url = configuration.GetConnectionString("Nats")!;
         })
-        .AddHandler<ScheduleMessageHandler>("gp.gamerecord.schedule.joker", "gp.gamerecord.schedule");
-    })
-    .AddMongoMessageQueue(config =>
-    {
-        _ = config
-            .DefineMessageQueue(
-                gameRecordInfo.MongoDefine,
-                sp => new MongoMessageQueueBuilderOptions
-                {
-                    ConnectionString = sp.GetRequiredService<IConfiguration>().GetConnectionString("MongoMessaging")!,
-                    MessageQueue = MessageQueue.Default
-                });
+        .AddHandler<ScheduleMessageHandler>(natsSetting.Subject, natsSetting.Group);
     })
     .ClearAllExchanges()
-    .AddMongoGlobPatternExchange(gameRecordInfo.MongoGlobPattern, gameRecordInfo.MongoDefine, gameRecordInfo.MongoGlobPattern);
+    .AddMongoGlobPatternExchange(mongoSetting.GlobPattern, mongoSetting.ManagerName, mongoSetting.QueueName);
 
 builder.Services
     .AddSingleton<IConfigureOptions<OtlpExporterOptions>>(
@@ -145,14 +144,19 @@ builder.Services
         };
     });
 
-builder.Services.AddHealthChecks();
+builder.Services
+    .AddHealthChecks();
 
 var app = builder.Build();
 
-app.MapControllers();
+_ = app.UseSwagger();
+_ = app.UseSwaggerUI();
+
+_ = app.UseAuthorization();
+
+_ = app.MapControllers();
+
 app.MapProfileViewer();
-app.MapSwagger();
-app.UseSwaggerUI();
 
 app.MapHealthChecks("/healthz");
 

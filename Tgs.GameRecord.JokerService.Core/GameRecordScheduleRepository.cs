@@ -43,7 +43,7 @@ internal class GameRecordScheduleRepository : IGameRecordSchedule
         var config = new ScheduleConfig
         {
             LastGameRecordTime = new DateTimeOffset(Convert.ToDateTime("1970-01-01"), TimeSpan.Zero),
-            StartTime = sysTime.AddSeconds((double)_gameRecordInfo.IntervalMinute * 60 * -1),
+            StartTime = sysTime.AddSeconds(_gameRecordInfo.IntervalMinutes * 60 * -1),
             EndTime = sysTime
         };
 
@@ -66,14 +66,14 @@ internal class GameRecordScheduleRepository : IGameRecordSchedule
     {
         var config = GetConfig(gameProviderSchedule);
 
-        if (config.EndTime > sysTime || (sysTime - config.EndTime).TotalSeconds < (double)_gameRecordInfo.IntervalMinute * 60)
+        if (config.EndTime > sysTime || (sysTime - config.EndTime).TotalSeconds < (double)_gameRecordInfo.IntervalMinutes * 60)
         {
-            config.StartTime = sysTime.AddSeconds((double)_gameRecordInfo.IntervalMinute * 60 * -1);
+            config.StartTime = sysTime.AddSeconds((double)_gameRecordInfo.IntervalMinutes * 60 * -1);
             config.EndTime = sysTime;
         }
         else
         {
-            var endTime = config.EndTime.AddSeconds((double)_gameRecordInfo.IntervalMinute * 60);
+            var endTime = config.EndTime.AddSeconds((double)_gameRecordInfo.IntervalMinutes * 60);
             config.StartTime = config.EndTime;
             config.EndTime = endTime > sysTime ? sysTime : endTime;
         }

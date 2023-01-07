@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -22,10 +23,15 @@ internal class GameRoundHandleServiceUnitTest
         {
             GameProviderCode = GameProviderType.Joker,
             GameProviderConfiguration = GameProviderConfigurations.Joker,
-            MongoDefine = "gp.gamerecord.database",
-            MongoGlobPattern = "tgs.gp.gamerecord.database.round.joker",
-            IntervalMinuteMax = 60,
-            IntervalMinute = 20
+            IntervalMinutes = 15,
+            IntervalMinutesMax = 60,
+            IntervalMinutesMinimum = 11
+        });
+        var fakeMongoSettingOptions = Options.Create(new MongoSettingOptions()
+        {
+            ManagerName = "gp.gamerecord.database",
+            QueueName = "tgs.gp.gamerecord.database.round.joker",
+            GlobPattern = "tgs.gp.gamerecord.database.round.joker"
         });
         var fakeMessageSender = Substitute.For<IMessageSender>();
         var fakeUtensil = Substitute.For<IUtensil>();
@@ -78,17 +84,18 @@ internal class GameRoundHandleServiceUnitTest
             .Returns(gameId);
 
         var gameProviderConfigurationId = Guid.NewGuid();
-        _ = fakeUtensil.BrandGetGameProviderConfigurationIdAsync(
+        _ = fakeUtensil.GetBrandGameProviderConfigurationIdAsync(
             Arg.Is(playerInfo.BrandId),
             Arg.Is(gameRecord.GameProviderId)
             ).Returns(gameProviderConfigurationId);
         var query = new GameRoundHandleQuery(gameRecord);
 
         var sut = new GameRoundHandleService(
+            fakeLogger,
             fakeOptions,
+            fakeMongoSettingOptions,
             fakeMessageSender,
-            fakeUtensil,
-            fakeLogger);
+            fakeUtensil);
 
         var actual = await sut.GetAsync(query);
 
@@ -97,6 +104,7 @@ internal class GameRoundHandleServiceUnitTest
         await fakeMessageSender.Received(1)
             .PublishAsync(
             Arg.Is($"tgs.gp.gamerecord.database.round.joker"),
-            Arg.Any<ReadOnlyMemory<byte>>()).ConfigureAwait(false);
+            Arg.Any<ReadOnlyMemory<byte>>(),
+            Arg.Any<CancellationToken>()).ConfigureAwait(false);
     }
 }

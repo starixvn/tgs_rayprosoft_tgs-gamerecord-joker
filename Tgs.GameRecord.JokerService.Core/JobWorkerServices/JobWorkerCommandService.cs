@@ -29,9 +29,15 @@ internal class JobWorkerCommandService : ICommandService<JobWorkerCommand>
 
     public async ValueTask ExecuteAsync(JobWorkerCommand command, CancellationToken cancellationToken = default)
     {
-        var configuration = await _utensil.GetSettingConfigurationAsync().ConfigureAwait(false);
+        var configuration = await _utensil
+            .GetSettingConfigurationAsync(
+                cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
 
-        var gameProviderId = await _utensil.GetGameProviderIdAsync().ConfigureAwait(false);
+        var gameProviderId = await _utensil
+            .GetGameProviderIdAsync(
+                cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
 
         if (configuration == null)
         {
