@@ -178,7 +178,7 @@ public class UtensilRepositoryUnitTest
     }
 
     [Test]
-    public async Task Get_GameProvider_Id_Exception()
+    public void Get_GameProvider_Id_Exception()
     {
         var gameRecordInfo = Options.Create(new GameRecordInfoOptions
         {
