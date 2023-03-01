@@ -1,20 +1,20 @@
 ﻿using System.Text.Json;
 using Microsoft.Extensions.Options;
-using Tgs.GameRounds.WorkService.Client;
-using Tgs.GameRounds.WorkService.Common.Protos;
+using Tgs.GameRounds.Work.Client;
+using Tgs.GameRounds.Work.Common.Protos;
 using Tgs.ServiceUtility;
 
 namespace Tgs.GameRecord.JokerService.Core.ApplicationServices;
 
 internal class GameRoundHandleService : IGetService<GameRoundHandleQuery, bool>
 {
-    private readonly IGameRoundsWorkServiceClient _client;
+    private readonly IGameRoundsWorkClient _client;
     private readonly GameRecordInfoOptions _gameRecordInfo;
     private readonly IUtensil _utensil;
 
     public GameRoundHandleService(
         IOptions<GameRecordInfoOptions> gameRecordInfoOptions,
-        IGameRoundsWorkServiceClient client,
+        IGameRoundsWorkClient client,
         IUtensil utensil
         )
     {

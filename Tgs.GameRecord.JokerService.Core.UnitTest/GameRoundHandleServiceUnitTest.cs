@@ -8,8 +8,8 @@ using Tgs.GameCommand.Common;
 using Tgs.GameProviders.Client;
 using Tgs.GameProviders.Domains;
 using Tgs.GameRecord.JokerService.Core.ApplicationServices;
-using Tgs.GameRounds.WorkService.Client;
-using Tgs.GameRounds.WorkService.Common.Protos;
+using Tgs.GameRounds.Work.Client;
+using Tgs.GameRounds.Work.Common.Protos;
 
 namespace Tgs.GameRecord.JokerService.Core.UnitTest;
 
@@ -27,7 +27,7 @@ internal class GameRoundHandleServiceUnitTest
             IntervalMinutesMax = 60,
             IntervalMinutesMinimum = 11
         });
-        var fakeClient = Substitute.For<IGameRoundsWorkServiceClient>();
+        var fakeClient = Substitute.For<IGameRoundsWorkClient>();
         var fakeUtensil = Substitute.For<IUtensil>();
 
         var gameRecord = new GameRecordModle()
@@ -129,7 +129,7 @@ internal class GameRoundHandleServiceUnitTest
             IntervalMinutesMax = 60,
             IntervalMinutesMinimum = 11
         });
-        var fakeClient = Substitute.For<IGameRoundsWorkServiceClient>();
+        var fakeClient = Substitute.For<IGameRoundsWorkClient>();
         var fakeUtensil = Substitute.For<IUtensil>();
 
         var gameRecord = new GameRecordModle()
