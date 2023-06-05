@@ -29,9 +29,9 @@ internal class PullRecordCommandService : ICommandService<PullRecordCommand>
 
     public async ValueTask ExecuteAsync(PullRecordCommand command, CancellationToken cancellationToken = default)
     {
+        string nextId = string.Empty;
         while (true)
         {
-            string nextId = string.Empty;
             var reply = await _client
                 .GameRecordAsync(
                     apiUrl: command.ApiUrl,
