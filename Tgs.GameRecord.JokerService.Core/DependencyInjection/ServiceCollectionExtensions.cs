@@ -1,8 +1,8 @@
 ﻿using System.Reflection;
 using Tgs.GameCommand.Client;
-using Tgs.GameProviders.Client;
+using Tgs.GameInterface.Joker.Client;
 using Tgs.GameRecord.JokerService.Core;
-using Tgs.GameRecordSchedules.Client;
+using Tgs.GameRounds.Schedule.Client;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -10,11 +10,15 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddGameRecordCore(
         this IServiceCollection services,
+        Action<RedisOptions, IServiceProvider> redisDBconfigure,
         Action<GameRecordInfoOptions, IServiceProvider> gameRecordInfoOptions,
         Action<GameCommandClientOptions, IServiceProvider> gameCommandClientOptions,
-        Action<GameRecordSchedulesClientOptions, IServiceProvider> gameRecordSchedulesClientOptions,
-        Action<GameProvidersClientOptions, IServiceProvider> gameProvidersClientOptions)
+        Action<GameRoundsScheduleClientOptions, IServiceProvider> gameRoundsScheduleClientOptions,
+        Action<GameInterfaceJokerClientOptions, IServiceProvider> gameInterfaceJokerClientOptions)
         => services
+            .AddOptions<RedisOptions>()
+            .Configure(redisDBconfigure)
+            .Services
             .AddOptions<GameRecordInfoOptions>()
             .Configure(gameRecordInfoOptions)
             .Services
@@ -22,11 +26,14 @@ public static class ServiceCollectionExtensions
                 Assembly.GetExecutingAssembly(),
                 ServiceLifetime.Transient)
             .AddMemoryCache()
+            .AddSingleton<RedisConnectionManager>()
             .AddGameCommandClient(gameCommandClientOptions)
-            .AddGameRecordSchedulesClient(gameRecordSchedulesClientOptions)
-            .AddGameProvidersClient(gameProvidersClientOptions)
+            .AddGameRoundsScheduleClient(gameRoundsScheduleClientOptions)
+            .AddGameInterfaceJokerClient(gameInterfaceJokerClientOptions)
             .AddGameRoundsWorkClient()
-            .AddScoped<ISystemClock, SystemClock>()
-            .AddScoped<IGameRecordSchedule, GameRecordScheduleRepository>()
-            .AddTransient<IUtensil>(sp => ActivatorUtilities.CreateInstance<UtensilRepository>(sp, TimeSpan.FromHours(1)));
+            .AddGameRoundsWorkManualClient()
+            .AddSingleton<IScheduleFormDispatcher, ScheduleFormDispatcher>()
+            .AddSingleton<IScheduleFormLock>(sp => ActivatorUtilities.CreateInstance<ScheduleFormLock>(sp, sp.GetRequiredService<RedisConnectionManager>().Database))
+            .AddTransient<IUtensil>(sp => ActivatorUtilities.CreateInstance<UtensilRepository>(sp, TimeSpan.FromHours(1)))
+            .AddSingleton<IGameRecordUtensil, GameRecordUtensil>();
 }

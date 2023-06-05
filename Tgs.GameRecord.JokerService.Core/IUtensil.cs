@@ -1,5 +1,4 @@
 ﻿using Tgs.GameCommand.Common;
-using Tgs.GameProviders.Domains.SettingConfiguration;
 
 namespace Tgs.GameRecord.JokerService.Core;
 
@@ -15,13 +14,12 @@ public interface IUtensil
         string gameExternalId,
         CancellationToken cancellationToken = default);
 
+    string GetGameProviderCode();
+
     ValueTask<Guid> GetGameProviderIdAsync(
         CancellationToken cancellationToken = default);
 
     ValueTask<PlayerInfo?> GetPlayerAsync(
         string playerCode,
-        CancellationToken cancellationToken = default);
-
-    ValueTask<JokerConfiguration> GetSettingConfigurationAsync(
         CancellationToken cancellationToken = default);
 }
