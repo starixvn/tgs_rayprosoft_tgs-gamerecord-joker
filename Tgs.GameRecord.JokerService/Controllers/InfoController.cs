@@ -25,7 +25,6 @@ public class InfoController : ControllerBase
         var hostIp = Array.Find(hostEntry.AddressList,
             x => x.AddressFamily == AddressFamily.InterNetwork);
         var gameRecordInfo = _configuration.GetSection("GameRecordInfo").Get<GameRecordInfoOptions>();
-        var natsSetting = _configuration.GetSection("NatsSetting").Get<NatsSettingOptions>();
 
         return new
         {
@@ -36,8 +35,7 @@ public class InfoController : ControllerBase
             OsVersion = $"{Environment.OSVersion}",
             Version = Assembly.GetExecutingAssembly().GetName().Version?.ToString(),
             ProcessCount = Environment.ProcessorCount,
-            gameRecordInfo,
-            natsSetting
+            gameRecordInfo
         };
     }
 }

@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Options;
 using Tgs.GameCommand.Client;
 using Tgs.GameCommand.Common;
-using Tgs.GameProviders.Domains.SettingConfiguration;
 
 namespace Tgs.GameRecord.JokerService.Core;
 
@@ -57,6 +56,7 @@ internal class UtensilRepository : IUtensil
         Guid gameProviderId,
         string gameExternalId,
         CancellationToken cancellationToken = default)
+
     {
         var key = $"gamerecord:{_gameRecordInfo.GameProviderCode}:{gameProviderId}:{gameExternalId}";
         if (!_memoryCache.TryGetValue(key, out int? gameId))
@@ -73,11 +73,14 @@ internal class UtensilRepository : IUtensil
                 return _memoryCache
                     .Set(
                         key: key,
-                        value: gameId);
+                        value: gameId.Value);
             }
         }
         return gameId;
     }
+
+    public string GetGameProviderCode()
+        => _gameRecordInfo.GameProviderCode;
 
     public async ValueTask<Guid> GetGameProviderIdAsync(
         CancellationToken cancellationToken = default)
@@ -121,13 +124,4 @@ internal class UtensilRepository : IUtensil
         }
         return playerModel;
     }
-
-    public async ValueTask<JokerConfiguration> GetSettingConfigurationAsync(
-        CancellationToken cancellationToken = default)
-        => await _client
-        .SettingGetConfigurationAsync<JokerConfiguration>(
-            key: _gameRecordInfo.GameProviderConfiguration,
-            cancellationToken: cancellationToken)
-        .ConfigureAwait(false)
-        ?? throw new Exception($"This Game Provider Configuration does not exist.({_gameRecordInfo.GameProviderConfiguration})");
 }

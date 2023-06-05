@@ -4,25 +4,19 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using NSubstitute;
-using NUnit.Framework;
 using Tgs.GameCommand.Client;
 using Tgs.GameCommand.Common;
 
 namespace Tgs.GameRecord.JokerService.Core.UnitTest;
 
-[TestFixture]
 public class UtensilRepositoryUnitTest
 {
-    [Test]
+    [Fact]
     public async Task Get_Brand_GameProvider_Configuration_Id()
     {
         var gameRecordInfo = Options.Create(new GameRecordInfoOptions
         {
             GameProviderCode = "JOKER",
-            GameProviderConfiguration = "JOKERConfiguration",
-            IntervalMinutes = 15,
-            IntervalMinutesMax = 60,
-            IntervalMinutesMinimum = 11
         });
         var fakeClient = Substitute.For<IGameCommandClient>();
         var fakeMemoryCache = Substitute.For<IMemoryCache>();
@@ -59,9 +53,9 @@ public class UtensilRepositoryUnitTest
                 gameProviderId)
             .ConfigureAwait(false);
 
-        Assert.IsNotNull(actual);
-        Assert.IsTrue(actual.HasValue);
-        Assert.AreEqual(gameProviderConfigurationId, actual.Value);
+        Assert.NotNull(actual);
+        Assert.True(actual.HasValue);
+        Assert.Equal(gameProviderConfigurationId, actual.Value);
 
         _ = fakeMemoryCache
             .Received(1)
@@ -70,25 +64,18 @@ public class UtensilRepositoryUnitTest
                 gameProviderConfigurationId);
     }
 
-    [Test]
-    public async Task Get_Game_Id()
+    [Fact]
+    public void Get_GameProvider_Code()
     {
         var gameRecordInfo = Options.Create(new GameRecordInfoOptions
         {
-            GameProviderCode = "JOKER",
-            GameProviderConfiguration = "JOKERConfiguration",
-            IntervalMinutes = 15,
-            IntervalMinutesMax = 60,
-            IntervalMinutesMinimum = 11
+            GameProviderCode = "JOKER"
         });
         var fakeClient = Substitute.For<IGameCommandClient>();
         var fakeMemoryCache = Substitute.For<IMemoryCache>();
         var absoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
 
-        var gameProviderId = Guid.NewGuid();
-        var gameExternalId = "1";
-
-        var key = $"gamerecord:{gameRecordInfo.Value.GameProviderCode}:{gameProviderId}:{gameExternalId}";
+        var key = $"gamerecord:{gameRecordInfo.Value.GameProviderCode}";
 
         _ = fakeMemoryCache
             .TryGetValue(
@@ -96,47 +83,24 @@ public class UtensilRepositoryUnitTest
                 value: out _)
              .Returns(false);
 
-        var gameId = 1;
-        _ = fakeClient
-            .GameGetIdAsync(
-                gameProviderId: Arg.Is(gameProviderId),
-                gameExternalId: Arg.Is(gameExternalId),
-                cancellationToken: Arg.Any<CancellationToken>())
-            .Returns(gameId);
-
         var repository = new UtensilRepository(
             gameRecordInfo,
             fakeClient,
             fakeMemoryCache,
             absoluteExpirationRelativeToNow);
 
-        var actual = await repository
-            .GetGameIdAsync(
-                gameProviderId,
-                gameExternalId)
-            .ConfigureAwait(false);
+        var actual = repository
+            .GetGameProviderCode();
 
-        Assert.IsNotNull(actual);
-        Assert.IsTrue(actual.HasValue);
-        Assert.AreEqual(gameId, actual.Value);
-
-        _ = fakeMemoryCache
-            .Received(1)
-            .Set(
-                key: key,
-                gameId);
+        Assert.Equal(gameRecordInfo.Value.GameProviderCode, actual);
     }
 
-    [Test]
+    [Fact]
     public async Task Get_GameProvider_Id()
     {
         var gameRecordInfo = Options.Create(new GameRecordInfoOptions
         {
-            GameProviderCode = "JOKER",
-            GameProviderConfiguration = "JOKERConfiguration",
-            IntervalMinutes = 15,
-            IntervalMinutesMax = 60,
-            IntervalMinutesMinimum = 11
+            GameProviderCode = "JOKER"
         });
         var fakeClient = Substitute.For<IGameCommandClient>();
         var fakeMemoryCache = Substitute.For<IMemoryCache>();
@@ -167,8 +131,7 @@ public class UtensilRepositoryUnitTest
             .GetGameProviderIdAsync()
             .ConfigureAwait(false);
 
-        Assert.IsNotNull(actual);
-        Assert.AreEqual(gameProviderId, actual);
+        Assert.Equal(gameProviderId, actual);
 
         _ = fakeMemoryCache
             .Received(1)
@@ -177,22 +140,18 @@ public class UtensilRepositoryUnitTest
                 gameProviderId);
     }
 
-    [Test]
-    public void Get_GameProvider_Id_Exception()
+    [Fact]
+    public async Task Get_GameProvider_Id_Exception()
     {
         var gameRecordInfo = Options.Create(new GameRecordInfoOptions
         {
-            GameProviderCode = "JOKER",
-            GameProviderConfiguration = "JOKERConfiguration",
-            IntervalMinutes = 15,
-            IntervalMinutesMax = 60,
-            IntervalMinutesMinimum = 11
+            GameProviderCode = "JOKER"
         });
         var fakeClient = Substitute.For<IGameCommandClient>();
         var fakeMemoryCache = Substitute.For<IMemoryCache>();
         var absoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
 
-        var key = $"{gameRecordInfo.Value.GameProviderCode}";
+        var key = $"gamerecord:{gameRecordInfo.Value.GameProviderCode}";
 
         _ = fakeMemoryCache
             .TryGetValue(
@@ -212,21 +171,18 @@ public class UtensilRepositoryUnitTest
             fakeMemoryCache,
             absoluteExpirationRelativeToNow);
 
-        _ = Assert.ThrowsAsync<Exception>(() => repository
-              .GetGameProviderIdAsync()
-              .AsTask());
+        _ = await Assert.ThrowsAsync<Exception>(() => repository
+             .GetGameProviderIdAsync()
+             .AsTask())
+             .ConfigureAwait(false);
     }
 
-    [Test]
+    [Fact]
     public async Task Get_Player()
     {
         var gameRecordInfo = Options.Create(new GameRecordInfoOptions
         {
-            GameProviderCode = "JOKER",
-            GameProviderConfiguration = "JOKERConfiguration",
-            IntervalMinutes = 15,
-            IntervalMinutesMax = 60,
-            IntervalMinutesMinimum = 11
+            GameProviderCode = "JOKER"
         });
         var fakeClient = Substitute.For<IGameCommandClient>();
         var fakeMemoryCache = Substitute.For<IMemoryCache>();
@@ -270,8 +226,8 @@ public class UtensilRepositoryUnitTest
                 playerCode: playerCode)
             .ConfigureAwait(false);
 
-        Assert.IsNotNull(actual);
-        Assert.AreEqual(playerCode, player.PlayerCode);
+        Assert.NotNull(actual);
+        Assert.Equal(playerCode, actual.PlayerCode);
 
         _ = fakeMemoryCache
             .Received(1)
