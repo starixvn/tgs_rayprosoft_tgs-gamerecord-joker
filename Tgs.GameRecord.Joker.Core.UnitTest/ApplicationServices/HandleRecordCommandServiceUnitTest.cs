@@ -39,7 +39,7 @@ public class HandleRecordCommandServiceUnitTest
                 cancellationToken: Arg.Any<CancellationToken>())
             .Returns(gameProviderId);
 
-        var gameProviderCode = "365TF";
+        var gameProviderCode = "JOKER";
         _ = fakeUtensil
             .GetGameProviderCode()
             .Returns(gameProviderCode);
