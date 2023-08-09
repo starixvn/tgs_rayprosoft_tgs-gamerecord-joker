@@ -1,8 +1,8 @@
 ﻿using System.Reflection;
 using Tgs.GameCommand.Client;
 using Tgs.GameInterface.Joker.Client;
-using Tgs.GameRounds.Schedule.Client;
 using Tgs.GameRecord.Joker.Core;
+using Tgs.GameRounds.Schedule.Client;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -31,9 +31,7 @@ public static class ServiceCollectionExtensions
             .AddGameRoundsScheduleClient(gameRoundsScheduleClientOptions)
             .AddGameInterfaceJokerClient(gameInterfaceJokerClientOptions)
             .AddGameRoundsWorkClient()
-            .AddGameRoundsWorkManualClient()
             .AddSingleton<IScheduleFormDispatcher, ScheduleFormDispatcher>()
             .AddSingleton<IScheduleFormLock>(sp => ActivatorUtilities.CreateInstance<ScheduleFormLock>(sp, sp.GetRequiredService<RedisConnectionManager>().Database))
-            .AddTransient<IUtensil>(sp => ActivatorUtilities.CreateInstance<UtensilRepository>(sp, TimeSpan.FromHours(1)))
-            .AddSingleton<IGameRecordUtensil, GameRecordUtensil>();
+            .AddTransient<IUtensil>(sp => ActivatorUtilities.CreateInstance<UtensilRepository>(sp, TimeSpan.FromHours(1)));
 }

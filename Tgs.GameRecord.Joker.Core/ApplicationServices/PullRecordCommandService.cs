@@ -1,32 +1,23 @@
 ﻿using Microsoft.Extensions.Logging;
 using Tgs.GameInterface.Joker.Client;
-using Tgs.GameRounds.Schedule.Protos;
 using Tgs.ServiceUtility;
-using Tgs.GameRecord.Joker.Core;
-using Tgs.GameRecord.Joker.Core.ApplicationServices;
 
 namespace Tgs.GameRecord.Joker.Core.ApplicationServices;
 
 internal class PullRecordCommandService : ICommandService<PullRecordCommand>
 {
     private readonly IGameInterfaceJokerClient _client;
-    private readonly IGameRecordUtensil _gameRecordUtensil;
     private readonly ILogger<PullRecordCommandService> _logger;
-    private readonly ICommandService<ManualHandleRecordCommand> _manualService;
-    private readonly ICommandService<ScheduleHandleRecordCommand> _scheduleService;
+    private readonly ICommandService<HandleRecordCommand> _service;
 
     public PullRecordCommandService(
         ILogger<PullRecordCommandService> logger,
         IGameInterfaceJokerClient client,
-        IGameRecordUtensil gameRecordUtensil,
-        ICommandService<ScheduleHandleRecordCommand> scheduleService,
-        ICommandService<ManualHandleRecordCommand> manualService)
+        ICommandService<HandleRecordCommand> service)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _client = client ?? throw new ArgumentNullException(nameof(client));
-        _gameRecordUtensil = gameRecordUtensil ?? throw new ArgumentNullException(nameof(gameRecordUtensil));
-        _scheduleService = scheduleService ?? throw new ArgumentNullException(nameof(scheduleService));
-        _manualService = manualService ?? throw new ArgumentNullException(nameof(manualService));
+        _service = service ?? throw new ArgumentNullException(nameof(service));
     }
 
     public async ValueTask ExecuteAsync(PullRecordCommand command, CancellationToken cancellationToken = default)
@@ -36,13 +27,13 @@ internal class PullRecordCommandService : ICommandService<PullRecordCommand>
         {
             var reply = await _client
                 .GameRecordAsync(
-                    apiUrl: command.ApiUrl,
-                    appId: command.AppId,
-                    secretKey: command.SecretKey,
-                    startTime: command.StartTime,
-                    endTime: command.EndTime,
-                    nextId: nextId,
-                    cancellationToken: cancellationToken)
+                apiUrl: command.ApiUrl,
+                appId: command.AppId,
+                secretKey: command.SecretKey,
+                startTime: command.StartTime,
+                endTime: command.EndTime,
+                nextId: nextId,
+                cancellationToken: cancellationToken)
                 .ConfigureAwait(false);
 
             nextId = reply.NextId;
@@ -56,32 +47,15 @@ internal class PullRecordCommandService : ICommandService<PullRecordCommand>
             {
                 try
                 {
-                    var record = await _gameRecordUtensil
-                        .SettlementConvertRecordAsync(
-                            gameRecord,
-                            cancellationToken)
+                    await _service
+                        .ExecuteAsync(
+                        command: new(Info: gameRecord),
+                        cancellationToken: cancellationToken)
                         .ConfigureAwait(false);
-
-                    if (command.Source == ScheduleFormSource.Schedule)
-                    {
-                        await _scheduleService
-                            .ExecuteAsync(
-                                command: new(Record: record),
-                                cancellationToken: cancellationToken)
-                            .ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        await _manualService
-                            .ExecuteAsync(
-                                command: new(Record: record),
-                                cancellationToken: cancellationToken)
-                            .ConfigureAwait(false);
-                    }
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "遊戲紀錄處理發生例外.({gameRecord})", gameRecord);
+                    _logger.LogError(ex, "LogOn:{logOn} Message:Exception in game record.({gameRecord})", DateTime.Now.ToString("o"), gameRecord);
                 }
             }
         }

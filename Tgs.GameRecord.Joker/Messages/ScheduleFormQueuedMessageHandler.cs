@@ -1,7 +1,6 @@
-﻿using Tgs.GameRounds.Schedule.Common.Protos;
+﻿using Tgs.GameRecord.Joker.Core;
+using Tgs.GameRounds.Schedule.Common.Protos;
 using Tgs.MessageQueue;
-using Tgs.GameRecord.Joker.Core;
-using Tgs.GameRecord.Joker.Messages;
 
 namespace Tgs.GameRecord.Joker.Messages;
 

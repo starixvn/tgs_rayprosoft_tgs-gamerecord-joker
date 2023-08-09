@@ -6,7 +6,6 @@ using Microsoft.Extensions.Options;
 using NSubstitute;
 using Tgs.GameCommand.Client;
 using Tgs.GameCommand.Common;
-using Tgs.GameRecord.Joker.Core;
 
 namespace Tgs.GameRecord.Joker.Core.UnitTest;
 
@@ -54,9 +53,7 @@ public class UtensilRepositoryUnitTest
                 gameProviderId)
             .ConfigureAwait(false);
 
-        Assert.NotNull(actual);
-        Assert.True(actual.HasValue);
-        Assert.Equal(gameProviderConfigurationId, actual.Value);
+        Assert.Equal(gameProviderConfigurationId, actual);
 
         _ = fakeMemoryCache
             .Received(1)

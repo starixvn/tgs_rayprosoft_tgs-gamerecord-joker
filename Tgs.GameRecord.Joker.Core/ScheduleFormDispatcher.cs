@@ -1,11 +1,10 @@
 ﻿using System.Text.Json;
 using Microsoft.Extensions.Logging;
+using Tgs.GameRecord.Joker.Core.ApplicationServices;
 using Tgs.GameRounds.Schedule.Client;
 using Tgs.GameRounds.Schedule.Common.Protos;
 using Tgs.GameRounds.Schedule.Protos;
 using Tgs.ServiceUtility;
-using Tgs.GameRecord.Joker.Core;
-using Tgs.GameRecord.Joker.Core.ApplicationServices;
 
 namespace Tgs.GameRecord.Joker.Core;
 

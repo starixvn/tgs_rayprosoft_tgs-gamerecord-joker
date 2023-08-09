@@ -5,10 +5,9 @@ using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using Tgs.GameInterface.Joker.Client;
 using Tgs.GameInterface.Joker.Protos;
+using Tgs.GameRecord.Joker.Core.ApplicationServices;
 using Tgs.GameRounds.Schedule.Protos;
 using Tgs.ServiceUtility;
-using Tgs.GameRecord.Joker.Core;
-using Tgs.GameRecord.Joker.Core.ApplicationServices;
 
 namespace Tgs.GameRecord.Joker.Core.UnitTest.ApplicationServices;
 
@@ -19,9 +18,7 @@ public class PullRecordCommandServiceUnitTest
     {
         var fakeLogger = NullLogger<PullRecordCommandService>.Instance;
         var fakeClient = Substitute.For<IGameInterfaceJokerClient>();
-        var fakeGameRecordUtensil = Substitute.For<IGameRecordUtensil>();
-        var fakeScheduleService = Substitute.For<ICommandService<ScheduleHandleRecordCommand>>();
-        var fakeManualService = Substitute.For<ICommandService<ManualHandleRecordCommand>>();
+        var fakeScheduleService = Substitute.For<ICommandService<HandleRecordCommand>>();
 
         var command = new PullRecordCommand(
             ApiUrl: new("http://localhost/"),
@@ -38,25 +35,23 @@ public class PullRecordCommandServiceUnitTest
 
         _ = fakeClient
             .GameRecordAsync(
-                apiUrl: Arg.Is(command.ApiUrl),
-                appId: Arg.Is(command.AppId),
-                secretKey: Arg.Is(command.SecretKey),
-                startTime: Arg.Is(command.StartTime),
-                endTime: Arg.Is(command.EndTime),
-                nextId: Arg.Any<string>(),
-                cancellationToken: Arg.Any<CancellationToken>())
+            apiUrl: Arg.Is(command.ApiUrl),
+            appId: Arg.Is(command.AppId),
+            secretKey: Arg.Is(command.SecretKey),
+            startTime: Arg.Is(command.StartTime),
+            endTime: Arg.Is(command.EndTime),
+            nextId: Arg.Any<string>(),
+            cancellationToken: Arg.Any<CancellationToken>())
             .Returns(reply);
 
         var service = new PullRecordCommandService(
             fakeLogger,
             fakeClient,
-            fakeGameRecordUtensil,
-            fakeScheduleService,
-            fakeManualService);
+            fakeScheduleService);
 
         await service
             .ExecuteAsync(
-                command: command)
+            command: command)
             .ConfigureAwait(false);
     }
 }
