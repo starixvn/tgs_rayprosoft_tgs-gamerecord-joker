@@ -81,40 +81,35 @@ public class ScheduleFormDispatcherUnitTest
 
         await dispatcher
             .ExecuteAsync(
-                 gameProviderCode: gameProviderCode,
-                id: id)
-            .ConfigureAwait(false);
+            gameProviderCode: gameProviderCode,
+            id: id);
 
         await fakeClient
             .Received(1)
             .ScheduleFormProcessingAsync(
-                gameProviderCode: Arg.Is(gameProviderCode),
-                id: Arg.Is(id),
-                cancellationToken: Arg.Any<CancellationToken>())
-            .ConfigureAwait(false);
+            gameProviderCode: Arg.Is(gameProviderCode),
+            id: Arg.Is(id),
+            cancellationToken: Arg.Any<CancellationToken>());
 
         await fakeClient
             .Received(0)
             .ScheduleFormCompleteAsync(
-                gameProviderCode: Arg.Is(gameProviderCode),
-                id: Arg.Is(id),
-                cancellationToken: Arg.Any<CancellationToken>())
-            .ConfigureAwait(false);
+            gameProviderCode: Arg.Is(gameProviderCode),
+            id: Arg.Is(id),
+            cancellationToken: Arg.Any<CancellationToken>());
 
         await fakeClient
             .Received(1)
             .ScheduleFormFaileAsync(
-                gameProviderCode: Arg.Is(gameProviderCode),
-                id: Arg.Is(id),
-                status: Arg.Any<string>(),
-                cancellationToken: Arg.Any<CancellationToken>())
-            .ConfigureAwait(false);
+            gameProviderCode: Arg.Is(gameProviderCode),
+            id: Arg.Is(id),
+            status: Arg.Any<string>(),
+            cancellationToken: Arg.Any<CancellationToken>());
 
         _ = await fakeScheduleFormLock
             .Received(1)
             .UnlockAsync(
-                id: Arg.Is(id))
-            .ConfigureAwait(false);
+            id: Arg.Is(id));
     }
 
     [Fact]
@@ -168,9 +163,8 @@ public class ScheduleFormDispatcherUnitTest
 
         await dispatcher
             .ExecuteAsync(
-                 gameProviderCode: gameProviderCode,
-                id: id)
-            .ConfigureAwait(false);
+            gameProviderCode: gameProviderCode,
+            id: id);
 
         var scheduleCommand = new PullRecordCommand(
             ApiUrl: new Uri(parameter.ApiUrl),
@@ -183,31 +177,27 @@ public class ScheduleFormDispatcherUnitTest
         await fakePullRecord
             .Received(1)
             .ExecuteAsync(
-                command: Arg.Is(scheduleCommand),
-                cancellationToken: Arg.Any<CancellationToken>())
-            .ConfigureAwait(false);
+            command: Arg.Is(scheduleCommand),
+            cancellationToken: Arg.Any<CancellationToken>());
 
         await fakeClient
             .Received(1)
             .ScheduleFormProcessingAsync(
-                gameProviderCode: Arg.Is(gameProviderCode),
-                id: Arg.Is(id),
-                cancellationToken: Arg.Any<CancellationToken>())
-            .ConfigureAwait(false);
+            gameProviderCode: Arg.Is(gameProviderCode),
+            id: Arg.Is(id),
+            cancellationToken: Arg.Any<CancellationToken>());
 
         await fakeClient
             .Received(1)
             .ScheduleFormCompleteAsync(
-                gameProviderCode: Arg.Is(gameProviderCode),
-                id: Arg.Is(id),
-                cancellationToken: Arg.Any<CancellationToken>())
-            .ConfigureAwait(false);
+            gameProviderCode: Arg.Is(gameProviderCode),
+            id: Arg.Is(id),
+            cancellationToken: Arg.Any<CancellationToken>());
 
         _ = await fakeScheduleFormLock
             .Received(1)
             .UnlockAsync(
-                id: Arg.Is(id))
-            .ConfigureAwait(false);
+            id: Arg.Is(id));
     }
 
     [Fact]
@@ -261,9 +251,8 @@ public class ScheduleFormDispatcherUnitTest
 
         await dispatcher
             .ExecuteAsync(
-                 gameProviderCode: gameProviderCode,
-                id: id)
-            .ConfigureAwait(false);
+            gameProviderCode: gameProviderCode,
+            id: id);
 
         var scheduleCommand = new PullRecordCommand(
             ApiUrl: new Uri(parameter.ApiUrl),
@@ -276,31 +265,27 @@ public class ScheduleFormDispatcherUnitTest
         await fakePullRecord
             .Received(1)
             .ExecuteAsync(
-                command: Arg.Is(scheduleCommand),
-                cancellationToken: Arg.Any<CancellationToken>())
-            .ConfigureAwait(false);
+            command: Arg.Is(scheduleCommand),
+            cancellationToken: Arg.Any<CancellationToken>());
 
         await fakeClient
             .Received(1)
             .ScheduleFormProcessingAsync(
-                gameProviderCode: Arg.Is(gameProviderCode),
-                id: Arg.Is(id),
-                cancellationToken: Arg.Any<CancellationToken>())
-            .ConfigureAwait(false);
+            gameProviderCode: Arg.Is(gameProviderCode),
+            id: Arg.Is(id),
+            cancellationToken: Arg.Any<CancellationToken>());
 
         await fakeClient
             .Received(1)
             .ScheduleFormCompleteAsync(
-                gameProviderCode: Arg.Is(gameProviderCode),
-                id: Arg.Is(id),
-                cancellationToken: Arg.Any<CancellationToken>())
-            .ConfigureAwait(false);
+            gameProviderCode: Arg.Is(gameProviderCode),
+            id: Arg.Is(id),
+            cancellationToken: Arg.Any<CancellationToken>());
 
         _ = await fakeScheduleFormLock
             .Received(1)
             .UnlockAsync(
-                id: Arg.Is(id))
-            .ConfigureAwait(false);
+            id: Arg.Is(id));
     }
 
     [Fact]
@@ -349,15 +334,13 @@ public class ScheduleFormDispatcherUnitTest
 
         await dispatcher
             .ExecuteAsync(
-                 gameProviderCode: gameProviderCode,
-                id: id)
-            .ConfigureAwait(false);
+            gameProviderCode: gameProviderCode,
+            id: id);
 
         _ = await fakeScheduleFormLock
             .Received(0)
             .LockingAsync(
-                id: Arg.Is(id))
-            .ConfigureAwait(false);
+            id: Arg.Is(id));
 
         var scheduleCommand = new PullRecordCommand(
             ApiUrl: new Uri(parameter.ApiUrl),
@@ -370,30 +353,26 @@ public class ScheduleFormDispatcherUnitTest
         await fakePullRecord
             .Received(0)
             .ExecuteAsync(
-                command: Arg.Is(scheduleCommand),
-                cancellationToken: Arg.Any<CancellationToken>())
-            .ConfigureAwait(false);
+            command: Arg.Is(scheduleCommand),
+            cancellationToken: Arg.Any<CancellationToken>());
 
         await fakeClient
             .Received(0)
             .ScheduleFormProcessingAsync(
-                gameProviderCode: Arg.Is(gameProviderCode),
-                id: Arg.Is(id),
-                cancellationToken: Arg.Any<CancellationToken>())
-            .ConfigureAwait(false);
+            gameProviderCode: Arg.Is(gameProviderCode),
+            id: Arg.Is(id),
+            cancellationToken: Arg.Any<CancellationToken>());
 
         await fakeClient
             .Received(0)
             .ScheduleFormCompleteAsync(
-                gameProviderCode: Arg.Is(gameProviderCode),
-                id: Arg.Is(id),
-                cancellationToken: Arg.Any<CancellationToken>())
-            .ConfigureAwait(false);
+            gameProviderCode: Arg.Is(gameProviderCode),
+            id: Arg.Is(id),
+            cancellationToken: Arg.Any<CancellationToken>());
 
         _ = await fakeScheduleFormLock
             .Received(0)
             .UnlockAsync(
-                id: Arg.Is(id))
-            .ConfigureAwait(false);
+            id: Arg.Is(id));
     }
 }

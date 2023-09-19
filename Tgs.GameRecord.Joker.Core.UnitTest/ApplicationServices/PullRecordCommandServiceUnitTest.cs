@@ -49,9 +49,6 @@ public class PullRecordCommandServiceUnitTest
             fakeClient,
             fakeScheduleService);
 
-        await service
-            .ExecuteAsync(
-            command: command)
-            .ConfigureAwait(false);
+        await service.ExecuteAsync(command: command);
     }
 }

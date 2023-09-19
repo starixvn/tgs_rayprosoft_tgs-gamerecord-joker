@@ -1,10 +1,15 @@
 ﻿using System.Net.Mime;
 using System.Text.Json.Serialization;
+using Hangfire;
+using Hangfire.Console;
+using Hangfire.Redis.StackExchange;
 using Microsoft.AspNetCore.Mvc;
 using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using Tgs.GameRecord.Joker;
+using Tgs.GameRecord.Joker.Core;
 using Tgs.GameRecord.Joker.Messages;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -47,6 +52,23 @@ builder.Services.AddSwaggerGen(c =>
     var xmlFileNames = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.xml");
     foreach (var xmlFileName in xmlFileNames) c.IncludeXmlComments(xmlFileName);
 });
+
+var _gameRecordInfo = builder.Configuration.GetSection("GameRecordInfo").Get<GameRecordInfoOptions>()!;
+
+// Learn more about configuring Hangfire
+builder.Services.AddHangfire((sp, config) =>
+{
+    var systemConfig = sp.GetRequiredService<IConfiguration>();
+    var connectionString = builder.Configuration.GetConnectionString("redis")!;
+    var options = new RedisStorageOptions
+    {
+        Prefix = _gameRecordInfo.GameProviderHangfire
+    };
+    _ = config
+    .UseRedisStorage(connectionString, options)
+    .UseConsole();
+})
+    .AddHangfireServer();
 
 builder.Services.AddGameRecordCore(
     (options, sp) =>
@@ -129,11 +151,24 @@ var app = builder.Build();
 _ = app.UseSwagger();
 _ = app.UseSwaggerUI();
 
+app.UseHangfireDashboard(
+    "/hangfire",
+    new DashboardOptions()
+    {
+        Authorization =
+        new[]
+        {
+            new IgnoreHangfireAuthorizationFilter()
+        }
+    });
+
 _ = app.UseAuthorization();
 
 _ = app.MapControllers();
 
 app.MapHealthChecks("/healthz");
+
+_ = app.UseHangfireRegisterAsync();
 
 _ = app.UseRegister();
 

@@ -12,9 +12,6 @@ data:
           "Default": "Warning"
           }
       },
-      "GameRecordInfo": {
-        "GameProviderCode": "JOKER"
-      },
       "GameRecord": {
         "GameCommandClientBaseUrl": "http://game-gamecommand/",
         "GameRoundsScheduleClientBaseUrl": "http://game-gamerounds-schedule:9090/",

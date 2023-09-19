@@ -16,20 +16,21 @@ public static class ServiceCollectionExtensions
         Action<GameRoundsScheduleClientOptions, IServiceProvider> gameRoundsScheduleClientOptions,
         Action<GameInterfaceJokerClientOptions, IServiceProvider> gameInterfaceJokerClientOptions)
         => services
-            .AddOptions<RedisOptions>()
-            .Configure(redisDBconfigure)
-            .Services
-            .AddOptions<GameRecordInfoOptions>()
-            .Configure(gameRecordInfoOptions)
-            .Services
-            .RegisterAllServiceUtilityTypes(
-                Assembly.GetExecutingAssembly(),
-                ServiceLifetime.Transient)
-            .AddSingleton<RedisConnectionManager>()
-            .AddGameCommandClient(gameCommandClientOptions)
-            .AddGameRoundsScheduleClient(gameRoundsScheduleClientOptions)
-            .AddGameInterfaceJokerClient(gameInterfaceJokerClientOptions)
-            .AddGameRecordHandleClient()
-            .AddSingleton<IScheduleFormDispatcher, ScheduleFormDispatcher>()
-            .AddSingleton<IScheduleFormLock>(sp => ActivatorUtilities.CreateInstance<ScheduleFormLock>(sp, sp.GetRequiredService<RedisConnectionManager>().Database));
+        .AddOptions<RedisOptions>()
+        .Configure(redisDBconfigure)
+        .Services
+        .AddOptions<GameRecordInfoOptions>()
+        .Configure(gameRecordInfoOptions)
+        .Services
+        .RegisterAllServiceUtilityTypes(
+            Assembly.GetExecutingAssembly(),
+            ServiceLifetime.Transient)
+        .AddSingleton<RedisConnectionManager>()
+        .AddGameCommandClient(gameCommandClientOptions)
+        .AddGameRoundsScheduleClient(gameRoundsScheduleClientOptions)
+        .AddGameInterfaceJokerClient(gameInterfaceJokerClientOptions)
+        .AddGameRecordHandleClient()
+        .AddTransient<IHangfireUtensil, HangfireUtensil>()
+        .AddSingleton<IScheduleFormDispatcher, ScheduleFormDispatcher>()
+        .AddSingleton<IScheduleFormLock>(sp => ActivatorUtilities.CreateInstance<ScheduleFormLock>(sp, sp.GetRequiredService<RedisConnectionManager>().Database));
 }

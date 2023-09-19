@@ -1,6 +1,6 @@
 ﻿using Tgs.GameRecord.Joker.Core;
 using Tgs.GameRounds.Schedule.Common.Protos;
-using Tgs.MessageQueue;
+using Valhalla.MessageQueue;
 
 namespace Tgs.GameRecord.Joker.Messages;
 
