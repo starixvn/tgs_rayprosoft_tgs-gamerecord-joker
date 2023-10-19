@@ -26,7 +26,7 @@ internal class HandleRecordCommandService : ICommandService<HandleRecordCommand>
         var settle = command.Info.Settle.ToDecimal().GetValueOrDefault(0);
         var commission = 0.0m;
         var winLoss = command.Info.WinLoss.ToDecimal().GetValueOrDefault(0);
-        var wagerState = command.Info.WinLoss > 0 ? WagerStates.Win : WagerStates.Lose;
+        var wagerState = winLoss > 0 ? WagerStates.Win : WagerStates.Lose;
 
         return _client
             .MessageAsync(
