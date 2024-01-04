@@ -1,4 +1,6 @@
-﻿namespace Tgs.GameRecord.Joker.Core;
+﻿using Tgs.GameRecord.Joker.Core;
+
+namespace Tgs.GameRecord.Joker;
 
 public record RedisOptions
 {

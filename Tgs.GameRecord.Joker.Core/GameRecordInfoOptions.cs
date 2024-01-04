@@ -6,7 +6,8 @@ public record GameRecordInfoOptions
 
     public string GameProviderConfiguration { get; init; } = default!;
 
-    public string GameProviderHangfire { get; init; } = default!;
+    public string HangfirePrefix { get; set; } = "gamerecord-joker-hangfire:";
+    public string HangfireLocking { get; set; } = "gamerecord-joker-locking:";
 
     public double IntervalMinutes { get; init; } = 5;
 

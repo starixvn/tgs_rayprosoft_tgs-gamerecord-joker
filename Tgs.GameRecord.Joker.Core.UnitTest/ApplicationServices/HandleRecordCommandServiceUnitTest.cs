@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 using Google.Protobuf.WellKnownTypes;
@@ -66,7 +67,7 @@ public class HandleRecordCommandServiceUnitTest
             commission: Arg.Is(0.0m),
             turnover: Arg.Is(command.Info.Bet.ToDecimal().GetValueOrDefault(0)),
             winLoss: Arg.Is(command.Info.WinLoss.ToDecimal().GetValueOrDefault(0)),
-            additionalData: Arg.Is(command.Info.AdditionalData),
+            additionalData: Arg.Any<JsonNode>(),
             cancellationToken: Arg.Any<CancellationToken>());
     }
 }

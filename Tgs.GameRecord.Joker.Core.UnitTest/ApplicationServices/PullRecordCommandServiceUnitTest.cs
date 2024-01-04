@@ -6,7 +6,6 @@ using NSubstitute;
 using Tgs.GameInterface.Joker.Client;
 using Tgs.GameInterface.Joker.Protos;
 using Tgs.GameRecord.Joker.Core.ApplicationServices;
-using Tgs.GameRounds.Schedule.Protos;
 using Tgs.ServiceUtility;
 
 namespace Tgs.GameRecord.Joker.Core.UnitTest.ApplicationServices;
@@ -25,8 +24,7 @@ public class PullRecordCommandServiceUnitTest
             AppId: "appId",
             SecretKey: "secretKey",
             StartTime: DateTimeOffset.UtcNow.AddMinutes(-10),
-            EndTime: DateTimeOffset.UtcNow,
-            Source: ScheduleFormSource.Schedule);
+            EndTime: DateTimeOffset.UtcNow);
 
         var reply = new GameRecordReply
         {

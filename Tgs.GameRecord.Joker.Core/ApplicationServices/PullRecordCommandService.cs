@@ -4,28 +4,17 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.GameRecord.Joker.Core.ApplicationServices;
 
-internal class PullRecordCommandService : ICommandService<PullRecordCommand>
+internal class PullRecordCommandService(
+    ILogger<PullRecordCommandService> logger,
+    IGameInterfaceJokerClient client,
+    ICommandService<HandleRecordCommand> service) : ICommandService<PullRecordCommand>
 {
-    private readonly IGameInterfaceJokerClient _client;
-    private readonly ILogger<PullRecordCommandService> _logger;
-    private readonly ICommandService<HandleRecordCommand> _service;
-
-    public PullRecordCommandService(
-        ILogger<PullRecordCommandService> logger,
-        IGameInterfaceJokerClient client,
-        ICommandService<HandleRecordCommand> service)
-    {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _client = client ?? throw new ArgumentNullException(nameof(client));
-        _service = service ?? throw new ArgumentNullException(nameof(service));
-    }
-
     public async ValueTask ExecuteAsync(PullRecordCommand command, CancellationToken cancellationToken = default)
     {
         string nextId = string.Empty;
         while (true)
         {
-            var reply = await _client
+            var reply = await client
                 .GameRecordAsync(
                 apiUrl: command.ApiUrl,
                 appId: command.AppId,
@@ -38,7 +27,7 @@ internal class PullRecordCommandService : ICommandService<PullRecordCommand>
 
             nextId = reply.NextId;
 
-            if (!reply.Items.Any())
+            if (reply.Items.Count == 0)
             {
                 break;
             }
@@ -47,7 +36,7 @@ internal class PullRecordCommandService : ICommandService<PullRecordCommand>
             {
                 try
                 {
-                    await _service
+                    await service
                         .ExecuteAsync(
                         command: new(Info: gameRecord),
                         cancellationToken: cancellationToken)
@@ -55,7 +44,7 @@ internal class PullRecordCommandService : ICommandService<PullRecordCommand>
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "LogOn:{logOn} Message: An exception occurred in this game record.({gameRecord})", DateTime.Now.ToString("o"), gameRecord);
+                    logger.LogError(ex, "LogOn:{logOn} Message: An exception occurred in this game record.({gameRecord})", DateTime.Now.ToString("o"), gameRecord);
                 }
             }
         }

@@ -8,13 +8,13 @@ data:
   appsettings.json: |
     {
       "Logging": {
-         "LogLevel": {
-          "Default": "Warning"
-          }
+        "LogLevel": {
+          "Default": "Warning",
+          "Tgs.GameRecord.Joker.Messages": "Information"
+        }
       },
       "GameRecord": {
         "GameCommandClientBaseUrl": "http://game-gamecommand/",
-        "GameRoundsScheduleClientBaseUrl": "http://game-gamerounds-schedule:9090/",
         "GameInterfaceClientBaseUrl": "dns:///game-gameinterface-joker:9090/"
       }
     }
