@@ -10,7 +10,8 @@ data:
       "Logging": {
         "LogLevel": {
           "Default": "Warning",
-          "Tgs.GameRecord.Joker.Messages": "Information"
+          "Tgs.GameRecord.Joker.Messages": "Information",
+          "Tgs.GameRecord.Joker.Core.ApplicationServices.HandleRecordCommandService": "Information"
         }
       },
       "GameRecord": {

@@ -1,73 +1,86 @@
 ﻿using System;
-using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 using Google.Protobuf.WellKnownTypes;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using Tgs.GameInterface.Joker.Protos;
-using Tgs.GameRecord.Handle.Client;
-using Tgs.GameRecord.Handle.Common.Protos;
 using Tgs.GameRecord.Joker.Core.ApplicationServices;
+using Valhalla.MessageQueue;
 
 namespace Tgs.GameRecord.Joker.Core.UnitTest.ApplicationServices;
 
 public class HandleRecordCommandServiceUnitTest
 {
-    [Fact]
-    public async Task Settlement_Bets()
-    {
-        var gameRecordInfo = Options.Create(new GameRecordInfoOptions
-        {
-            GameProviderCode = "JOKER"
-        });
-        var fakeClient = Substitute.For<IGameRecordHandleClient>();
+	[Fact]
+	public async Task Settlement_Bets()
+	{
+		var faceLogger = NullLogger<HandleRecordCommandService>.Instance;
+		var gameRecordInfo = Options.Create(new GameRecordInfoOptions
+		{
+			GameProviderCode = "JOKER",
+			GameProviderConfiguration = "JOKERConfiguration",
+			HangfirePrefix = "gamerecord-joker-hangfire:",
+			HangfireLocking = "gamerecord-joker-locking:",
+			IntervalMinutes = 5,
+			IntervalMinutesMax = 30,
+			IntervalMinutesMinimum = 1
+		});
+		var fakeMessageSender = Substitute.For<IMessageSender>();
 
-        var command = new HandleRecordCommand(
-            Info: new GameRecordInfo
-            {
-                ExternalRoundId = "OU1459290213398",
-                ExternalGameId = "test",
-                PlayerCode = "4ucmqplxb029",
-                ExternalCreatedOn = DateTimeOffset.Parse("2023-03-29T17:51:40.717+08:00").ToTimestamp(),
-                ExternalClosedOn = DateTimeOffset.Parse("2023-03-29T17:51:40.717+08:00").ToTimestamp(),
-                Bet = 10,
-                Settle = 20,
-                WinLoss = 10,
-                AdditionalData = "{\"Id\":\"OU1459290213398\"}"
-            });
+		var command = new HandleRecordCommand(
+			Info: new GameRecordInfo
+			{
+				ExternalRoundId = "OU1459290213398",
+				ExternalGameId = "test",
+				PlayerCode = "4ucmqplxb029",
+				ExternalCreatedOn = DateTimeOffset.Parse("2023-03-29T17:51:40.717+08:00").ToTimestamp(),
+				ExternalClosedOn = DateTimeOffset.Parse("2023-03-29T17:51:40.717+08:00").ToTimestamp(),
+				Bet = 10,
+				Settle = 20,
+				WinLoss = 10,
+				AdditionalData = "{\"Id\":\"OU1459290213398\"}"
+			});
 
-        var service = new HandleRecordCommandService(
-            gameRecordInfo,
-            fakeClient);
+		var service = new HandleRecordCommandService(
+			faceLogger,
+			gameRecordInfo,
+			fakeMessageSender);
 
-        await service.ExecuteAsync(command: command);
+		await service.ExecuteAsync(command: command);
 
-        await fakeClient
-            .Received(1)
-            .MessageAsync(
-            gameProviderCode: Arg.Is(gameRecordInfo.Value.GameProviderCode),
-            playerCode: Arg.Is(command.Info.PlayerCode),
-            wagerState: Arg.Is(WagerStates.Win),
-            wagerType: Arg.Is(WagerTypes.Normal),
-            freeGameState: Arg.Is(FreeGameStates.None),
-            gambleState: Arg.Is(GambleStates.None),
-            cashoutState: Arg.Is(CashoutStates.None),
-            resettleState: Arg.Is(ResettleStates.None),
-            externalRoundId: Arg.Is(command.Info.ExternalRoundId),
-            externalWagerId: Arg.Is(command.Info.ExternalRoundId),
-            externalGameId: Arg.Is(command.Info.ExternalGameId),
-            externalCreatedOn: Arg.Is(command.Info.ExternalCreatedOn.ToDateTimeOffset()),
-            externalClosedOn: Arg.Is(command.Info.ExternalClosedOn.ToDateTimeOffset()),
-            externalPayoffOn: Arg.Is(command.Info.ExternalClosedOn.ToDateTimeOffset()),
-            externalResettleOn: Arg.Is(DateTimeOffset.UnixEpoch),
-            bet: Arg.Is(command.Info.Bet.ToDecimal().GetValueOrDefault(0)),
-            validBet: Arg.Is(command.Info.Bet.ToDecimal().GetValueOrDefault(0)),
-            settle: Arg.Is(command.Info.Settle.ToDecimal().GetValueOrDefault(0)),
-            commission: Arg.Is(0.0m),
-            turnover: Arg.Is(command.Info.Bet.ToDecimal().GetValueOrDefault(0)),
-            winLoss: Arg.Is(command.Info.WinLoss.ToDecimal().GetValueOrDefault(0)),
-            additionalData: Arg.Any<JsonNode>(),
-            cancellationToken: Arg.Any<CancellationToken>());
-    }
+		_ = fakeMessageSender
+			.Received(1)
+			.PublishAsync(
+			subject: Arg.Is(Handle.Common.GameRecordHandleNatsConst.GameRecordHandleRequest),
+			data: Arg.Is(new Handle.Common.Protos.GameRecordHandleRequest
+			{
+				GameProviderCode = gameRecordInfo.Value.GameProviderCode,
+				PlayerCode = command.Info.PlayerCode,
+				ExternalRoundId = command.Info.ExternalRoundId,
+				ExternalBetId = command.Info.ExternalRoundId,
+				ExternalGameId = command.Info.ExternalGameId,
+				ExternalCreatedOn = command.Info.ExternalCreatedOn,
+				ExternalClosedOn = command.Info.ExternalClosedOn,
+				ExternalPayoffOn = command.Info.ExternalClosedOn,
+				ExternalResettleOn = DateTimeOffset.UnixEpoch.ToTimestamp(),
+				BetState = Handle.Common.Protos.BetState.Win,
+				BetType = Handle.Common.Protos.BetType.Normal,
+				FreeGameState = Handle.Common.Protos.FreeGameState.None,
+				GambleState = Handle.Common.Protos.GambleState.None,
+				CashoutState = Handle.Common.Protos.CashoutState.None,
+				ResettleState = Handle.Common.Protos.ResettleState.None,
+				JackpotState = Handle.Common.Protos.JackpotState.None,
+				Bet = 10.0m,
+				ValidBet = 10.0m,
+				Settle = 20.0m,
+				Commission = 0.0M,
+				Turnover = 10.0m,
+				WinLoss = 10.0m,
+				Jackpot = 0.0M,
+				AdditionalData = command.Info.AdditionalData
+			}),
+			cancellationToken: Arg.Any<CancellationToken>());
+	}
 }
