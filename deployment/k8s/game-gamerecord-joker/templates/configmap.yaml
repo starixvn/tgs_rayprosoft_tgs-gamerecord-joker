@@ -10,8 +10,10 @@ data:
       "Logging": {
         "LogLevel": {
           "Default": "Warning",
-          "Tgs.GameRecord.Joker.Messages": "Information",
-          "Tgs.GameRecord.Joker.Core.ApplicationServices.HandleRecordCommandService": "Information"
+          "Grpc.Net.Client.Balancer": "Debug",
+          "Tgs.GameRecord.Joker.Messages.ManualMessageHandler": "Information",
+          "Tgs.GameRecord.Joker.Messages.ScheduleMessageHandler": "Warning",
+          "Tgs.GameRecord.Joker.Core.ApplicationServices.HandleRecordCommandService": "Warning"
         }
       },
       "GameRecord": {
