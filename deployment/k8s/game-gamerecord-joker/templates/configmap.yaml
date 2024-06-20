@@ -10,7 +10,8 @@ data:
       "Logging": {
         "LogLevel": {
           "Default": "Warning",
-          "Grpc.Net.Client.Balancer": "Debug",
+          "Grpc.Net.Client.Balancer": "Warning",
+          "Grpc.Net.Client.Balancer.DnsResolver": "Debug",
           "Tgs.GameRecord.Joker.Messages.ManualMessageHandler": "Information",
           "Tgs.GameRecord.Joker.Messages.ScheduleMessageHandler": "Warning",
           "Tgs.GameRecord.Joker.Core.ApplicationServices.HandleRecordCommandService": "Warning"
