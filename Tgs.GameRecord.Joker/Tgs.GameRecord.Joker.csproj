@@ -5,11 +5,6 @@
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<ServerGarbageCollection>true</ServerGarbageCollection>
-		<UserSecretsId>fce722a5-2ab7-4cc2-8417-c6fd26f3ae68</UserSecretsId>
-		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-	</PropertyGroup>
-
-	<PropertyGroup>
 		<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
 		<NoWarn>$(NoWarn);1591;0063</NoWarn>
 	</PropertyGroup>
@@ -26,12 +21,13 @@
 		<PackageReference Include="OpenTelemetry.Instrumentation.GrpcNetClient" Version="1.0.0-rc9.3" />
 		<PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.9.0" />
 		<PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.9.0" />
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.1" />
 		<PackageReference Include="Tgs.Interceptors" Version="0.2.1" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\Tgs.GameRecord.Joker.Core\Tgs.GameRecord.Joker.Core.csproj" />
+		<ProjectReference Include="..\Tgs.GameRecord.Joker.Repositories\Tgs.GameRecord.Joker.Repositories.csproj" />
 	</ItemGroup>
 
 </Project>

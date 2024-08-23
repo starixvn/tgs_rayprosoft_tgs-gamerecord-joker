@@ -11,6 +11,7 @@ namespace Tgs.GameRecord.Joker.Core.JobApplicationServices;
 internal class JobExecuteCommandService(
 	ILogger<JobExecuteCommandService> logger,
 	IOptions<GameRecordInfoOptions> options,
+	TimeProvider timeProvider,
 	IMessageSender messageSender) : ICommandService<JobExecuteCommand>
 {
 	private readonly double _intervalMinutes = options.Value.IntervalMinutesMax < options.Value.IntervalMinutes
@@ -21,10 +22,11 @@ internal class JobExecuteCommandService(
 
 	public ValueTask ExecuteAsync(JobExecuteCommand command, CancellationToken cancellationToken = default)
 	{
-		var endTime = DateTimeOffset.ParseExact(DateTimeOffset.UtcNow.ToString(@"yyyy-MM-dd\THH:mm:00K"), @"yyyy-MM-dd\THH:mm:00K", null, styles: System.Globalization.DateTimeStyles.RoundtripKind);
+		var currentTime = timeProvider.GetUtcNow();
+		var endTime = DateTimeOffset.ParseExact(currentTime.ToString(@"yyyy-MM-dd\THH:mm:00K"), @"yyyy-MM-dd\THH:mm:00K", null, styles: System.Globalization.DateTimeStyles.RoundtripKind);
 		var startTime = endTime.AddMinutes(_intervalMinutes * -1);
 
-		var parameters = new JokerGameRecordMessage
+		var message = new JokerGameRecordMessage
 		{
 			ApiUrl = command.ApiUrl,
 			AppId = command.AppId,
@@ -33,11 +35,25 @@ internal class JobExecuteCommandService(
 			EndTime = endTime
 		};
 
-		logger.LogInformation("LogOn:{logOn} Parameters:{parameters}", DateTime.Now.ToString("u"), parameters);
+		logger.LogInformation("{logInformation}",
+			JsonSerializer.Serialize(new
+			{
+				LogOn = DateTime.Now.ToString("u"),
+				Subject = JokerNatsConst.SchedulePublish,
+				Data = new
+				{
+					message.ApiUrl,
+					message.AppId,
+					message.SecretKey,
+					StartTime = message.StartTime.ToString("u"),
+					EndTime = message.EndTime.ToString("u")
+				},
+				Message = "This message publishing handler."
+			}));
 
 		return messageSender.PublishAsync(
 			subject: JokerNatsConst.SchedulePublish,
-			data: Encoding.UTF8.GetBytes(JsonSerializer.Serialize(parameters)),
+			data: Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message)),
 			cancellationToken: cancellationToken);
 	}
 }
