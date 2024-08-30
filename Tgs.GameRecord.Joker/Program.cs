@@ -120,7 +120,8 @@ builder.Services
 		.AddHandler<ScheduleMessageHandler>(JokerNatsConst.SchedulePublish, JokerNatsConst.SchedulePublish)
 		.AddHandler<ManualMessageHandler>(JokerNatsConst.ManualPublish, JokerNatsConst.ManualPublish))
 	.ClearAllExchanges()
-	.AddNatsGlobPatternExchange("*");
+	.AddNatsGlobPatternExchange(JokerNatsConst.SchedulePublish)
+	.AddNatsGlobPatternExchange(JokerNatsConst.ManualPublish);
 
 builder.Services
 	.AddOpenTelemetry()
